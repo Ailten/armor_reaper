@@ -1,5 +1,5 @@
 
-from battle import Battle
+from .battle import Battle
 
 class StatusEffect:
     id_count: int = 0

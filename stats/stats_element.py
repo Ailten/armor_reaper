@@ -3,7 +3,7 @@ from .element import Element
 
 class StatsElement:
 
-    def __init__(self, val: dict[Element, int|float]|None):
+    def __init__(self, val: dict[Element, int|float]|None=None):
         self.val = val or dict()
 
     # ------>

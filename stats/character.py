@@ -34,40 +34,68 @@ class Character:
 
     # ------>
 
-    def atk(self, val: int|float, elem: Element, target: "Character") -> int:
+    def atk(self, val: int|float, elem: Element, target: "Character") -> tuple[int, list[str]]:
         val_eval = val
         val_eval *= self.stats_mult.get(elem) / 100.0 + 1.0
         val_eval += self.damages_incr.get(elem)
-        damage_maked = target.takeDamage(val_eval, elem, damage_dealer = target)
-        return damage_maked
+        val_eval = max(val_eval, 0)
 
-    def heal(self, val: int|float, elem: Element, target: "Character") -> int:
+        damage_maked, log = target.takeDamage(val_eval, elem, damage_dealer = target)
+
+        return (
+            damage_maked,
+            log
+        )
+
+    def heal(self, val: int|float, elem: Element, target: "Character") -> tuple[int, list[str]]:
         val_eval = val 
         val_eval += self.heal_incr.get(elem)
         val_eval *= self.stats_mult.get(elem) + 1.0
-        heal_maked = target.takeHeal(val_eval, elem, heal_dealer = target)
-        return heal_maked
+        val_eval = max(val_eval, 0)
+
+        heal_maked, log = target.takeHeal(val_eval, elem, heal_dealer = target)
+
+        return (
+            heal_maked,
+            log
+        )
 
     # ------>
 
-    def takeDamage(self, val: int|float, elem: Element, damage_dealer: Optional["Character"]) -> int:
+    def takeDamage(self, val: int|float, elem: Element, damage_dealer: Optional["Character"]) -> tuple[int, list[str]]:
         val_eval = val
         val_eval *= 1.0 - self.stats_mult.get(elem) / 100.0
         val_eval -= self.res_incr.get(elem)
-        self.hp.sub(val_eval)
-        if self.hp.val == 0:
-            self.death(damage_dealer)
-        return val_eval
+        val_eval = max(val_eval, 0)
 
-    def takeHeal(self, val: int|float, elem: Element, heal_dealer: Optional["Character"]):
+        self.hp.sub(val_eval)
+
+        log = [f"{self.name} take -{val_eval} HP ({elem.getName()})."]
+
+        if self.hp.val == 0:
+            log_death = self.death(damage_dealer)
+            log.append(log_death)
+
+        return (
+            val_eval,
+            log
+        )
+
+    def takeHeal(self, val: int|float, elem: Element, heal_dealer: Optional["Character"]) -> tuple[int, list[str]]:
         val_eval = val
+        
         self.hp.add(val_eval)
-        return val_eval
+
+        return (
+            val_eval, 
+            [f"{self.name} take +{val_eval} HP ({elem.getName()})."]
+        )
 
     # ------>
 
-    def death(self, killer: Optional["Character"]):
+    def death(self, killer: Optional["Character"]) -> str:
         self.is_dead = True
+        return f"{self.name} is dead !"
 
     # ------>
 

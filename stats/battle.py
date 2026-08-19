@@ -28,7 +28,7 @@ class Battle:
     
     # ------>
 
-    def spawn(self, character_to_spawn: Character):
+    def spawn(self, character_to_spawn: "Character"):
         character_to_spawn.setIndex(self)
         self.characters.append(character_to_spawn)
         character_to_spawn.battle = self
@@ -90,7 +90,7 @@ class Battle:
 
     # ------>
 
-    def getCharactersFiltered(self, is_left_team: bool|None=None, is_dead: bool|None=False) -> list[Character]:
+    def getCharactersFiltered(self, is_left_team: bool|None=None, is_dead: bool|None=False) -> list["Character"]:
         return [ c for c in self.characters if (
             (is_left_team == None or c.is_team_left == is_left_team) and
             (is_dead == None or c.is_dead == is_dead)

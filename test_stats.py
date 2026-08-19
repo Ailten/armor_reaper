@@ -21,3 +21,6 @@ fight.orderTurn()
 
 j = fight.getLogSimulateFight()
 print('\n'.join(j))
+
+
+# FIXME: infinit loop at death.

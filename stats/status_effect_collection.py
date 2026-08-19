@@ -1,4 +1,4 @@
-from status_effect import StatusEffect
+from .status_effect import StatusEffect
 
 class StatusEffectCollection:
     
