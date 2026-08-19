@@ -5,20 +5,23 @@ if typing.TYPE_CHECKING:
     from .character import Character
 
 class Battle:
+    status_effect_proc_max: int = 30
 
     def __init__(self):
-        self.index_status_effect = 0
+        self.status_effect_index = 0
         self.character_index = 0
         self.turn = 0
         self.character_turn = 0
 
         self.characters: list[Character] = []
 
+        self.status_effect_proc_count = 0
+
     # ------>
 
     def getNextIndexStatusEffect(self) -> int:
-        index_out = self.index_status_effect
-        self.index_status_effect += 1
+        index_out = self.status_effect_index
+        self.status_effect_index += 1
         return index_out
     
     def getNextIndexCharacter(self) -> int:
@@ -38,12 +41,26 @@ class Battle:
     def getLogSimulateFight(self) -> list[str]:
         log = ['--- fight stats ---']
 
+        def increaseCharacterTurn(battle: Battle):
+            battle.character_turn = (battle.character_turn + 1) % len(battle.characters)
+
         while not self.isFightEnd():
             character_turn = self.characters[self.character_turn]
+
+            if character_turn.is_dead:
+                increaseCharacterTurn()
+                continue
+
+            # do turn.
+            self.status_effect_proc_count = 0
             log_turn = character_turn.doTurn()
             log.append(log_turn)
 
-            self.character_turn = (self.character_turn + 1) % len(self.characters)
+            # expire effects.
+            for c in self.characters:
+                c.status_effects.expire(self)
+
+            increaseCharacterTurn()
 
         log.append('--- fight end ---')
         return log
@@ -95,6 +112,9 @@ class Battle:
             (is_left_team == None or c.is_team_left == is_left_team) and
             (is_dead == None or c.is_dead == is_dead)
         )]
+    
+    def getCharacterTurn(self) -> "Character":
+        return self.characters[self.character_turn]
 
     # ------>
 
