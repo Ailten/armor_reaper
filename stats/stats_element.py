@@ -21,3 +21,9 @@ class StatsElement:
 
     def sub(self, elem: Element, val_to_sub: int|float):
         self.val[Element] = self.val.get(Element, 0) + val_to_sub
+
+    # ------>
+
+    def resetVal(self, val: dict[Element, int|float]|None=None):
+        self.val = val or dict()
+

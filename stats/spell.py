@@ -39,8 +39,8 @@ class Spell:
             return log
         
         # make damage.
-        damage_maked = user.atk(5, Element.HEARTH, target)
-        log.append(f"{target.name} lose {damage_maked} HP ({Element.HEARTH.getName()}).")
+        damage_maked = user.atk(5, self.element_spell, target)
+        log.append(f"{target.name} lose {damage_maked} HP ({self.element_spell.getName()}).")
         if target.is_dead:
             log.append(f"{target.name} is dead.")
 
@@ -77,5 +77,12 @@ class Spell:
 
         return Spell.default_spell
 
+    # ------>
 
+    def __repr__(self) -> str:
+        return (
+            f'[name: {self.name}] '+
+            f'(spell_type: {self.spell_type.getName()}) '+
+            f'(elem: {self.element_spell.getName()})'
+        )
 

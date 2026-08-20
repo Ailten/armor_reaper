@@ -2,17 +2,14 @@
 from enum import Enum
 
 class Element(Enum):
-    NEUTRAL = (0, 'neutral'),
+    NEUTRAL = 0,
 
-    HEARTH = (1, 'hearth'),
-    FIRE = (2, 'fire'),
-    AIR = (3, 'air'),
-    WATER = (4, 'water')
+    HEARTH = 1,
+    FIRE = 2,
+    AIR = 3,
+    WATER = 4
 
     # ------>
     
-    def getIndex(self) -> int:
-        return self.value[0]
-    
     def getName(self) -> str:
-        return self.value[1]
+        return self.name.lower()

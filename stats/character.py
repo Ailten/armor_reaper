@@ -221,6 +221,14 @@ class Character:
         for c in self.battle.characters:
             c.status_effects.expireByDeath(self.battle, self)
 
+    # ------>
 
+    def __repr__(self) -> str:
+        return (
+            f'[name: {self.name}] '+
+            f'(class: {type(self).__name__}) '+
+            f'(lvl: {self.level}) '+
+            f'(hp: {self.hp.val}/{self.hp.max_val})'
+        )
 
 

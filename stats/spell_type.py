@@ -7,3 +7,8 @@ class SpellType(Enum):
     ATK = 1,
     HEAL = 2,
     BOOST = 3
+
+    # ------>
+    
+    def getName(self) -> str:
+        return self.name.lower()

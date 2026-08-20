@@ -43,6 +43,8 @@ class Battle:
 
         def increaseCharacterTurn(battle: Battle):
             battle.character_turn = (battle.character_turn + 1) % len(battle.characters)
+            if battle.character_turn == 0:
+                self.turn += 1
 
         while not self.isFightEnd():
             character_turn = self.characters[self.character_turn]

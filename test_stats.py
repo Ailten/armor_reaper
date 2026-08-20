@@ -3,15 +3,13 @@
 # Test.
 
 
-from stats import *
+from stats import Battle
+from stats.characters import Rogue, Slime
 
 
-chevalier = Character()
-chevalier.name = 'chevalier'
+chevalier = Rogue()
 
-slime = Character()
-slime.name = 'slime'
-slime.is_team_left = False
+slime = Slime()
 
 
 fight = Battle()
