@@ -48,7 +48,7 @@ class Battle:
             character_turn = self.characters[self.character_turn]
 
             if character_turn.is_dead:
-                increaseCharacterTurn()
+                increaseCharacterTurn(self)
                 continue
 
             # do turn.
@@ -60,7 +60,7 @@ class Battle:
             for c in self.characters:
                 c.status_effects.expire(self)
 
-            increaseCharacterTurn()
+            increaseCharacterTurn(self)
 
         log.append('--- fight end ---')
         return log

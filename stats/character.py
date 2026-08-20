@@ -167,10 +167,10 @@ class Character:
         log: list[str] = []
 
         # choose spell to use (and target).
-        spell_choose, target = None
+        spell_choose = target = None
         spell_choose_and_target = self.chooseASpellToUse()
         if spell_choose_and_target == None:
-            spell_choose = Spell.getDefaultSpell
+            spell_choose = Spell.getDefaultSpell()
         else:
             spell_choose, target = spell_choose_and_target
 

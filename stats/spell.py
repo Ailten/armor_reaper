@@ -16,7 +16,7 @@ class Spell:
         self.name = 'unknow-spell'
 
         self.turn_cooldown = 0
-        self.turn_when_use = int(float('-inf'))
+        self.turn_when_use: int|float = float('-inf')
 
         self.element_spell = Element.NEUTRAL
         self.spell_type = SpellType.DEFAULT
@@ -35,7 +35,7 @@ class Spell:
         # default spell (overide it in child class of all spell).
         log.append(f"{user.name} use {self.name}.")
 
-        if not target is Character:  # default spell focus only one target.
+        if not type(target).__name__ == "Character":  # default spell focus only one target.
             return log
         
         # make damage.
@@ -51,7 +51,7 @@ class Spell:
     
     # ------>
 
-    def isCanUse(self, user: "Character", battle: Battle) -> bool:
+    def isCanUse(self, user: "Character", battle: "Battle") -> bool:
         if self.mana_cost > user.mana.val:
             return False
         if self.stamina_cost > user.stamina.val:
@@ -60,7 +60,7 @@ class Spell:
             return False
         return True
     
-    def applyCoseSpell(self, user: "Character", battle: Battle):
+    def applyCoseSpell(self, user: "Character", battle: "Battle"):
         user.mana.sub(self.mana_cost)
         user.stamina.sub(self.stamina_cost)
         self.turn_when_use = battle.turn  # update cooldown turn.
