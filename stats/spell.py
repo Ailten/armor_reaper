@@ -16,7 +16,7 @@ class Spell:
         self.name = 'unknow-spell'
 
         self.turn_cooldown = 0
-        self.turn_when_use: int|float = float('-inf')
+        self.turn_when_use = 0
 
         self.element_spell = Element.NEUTRAL
         self.spell_type = SpellType.DEFAULT
@@ -35,14 +35,12 @@ class Spell:
         # default spell (overide it in child class of all spell).
         log.append(f"{user.name} use {self.name}.")
 
-        if not type(target).__name__ == "Character":  # default spell focus only one target.
+        if target == None or isinstance(target, list):  # default spell focus only one target.
             return log
         
         # make damage.
-        damage_maked = user.atk(5, self.element_spell, target)
-        log.append(f"{target.name} lose {damage_maked} HP ({self.element_spell.getName()}).")
-        if target.is_dead:
-            log.append(f"{target.name} is dead.")
+        damage_maked, logs_spell = user.atk(5, self.element_spell, target)
+        log.extend(logs_spell)
 
         # buy mana/stamina cost (or other).
         self.applyCoseSpell(user)
@@ -51,19 +49,19 @@ class Spell:
     
     # ------>
 
-    def isCanUse(self, user: "Character", battle: "Battle") -> bool:
+    def isCanUse(self, user: "Character") -> bool:
         if self.mana_cost > user.mana.val:
             return False
         if self.stamina_cost > user.stamina.val:
             return False
-        if (battle.turn - self.turn_when_use) > self.turn_cooldown:  # verify cooldown turn.
+        if (self.turn_when_use - user.battle.turn) > self.turn_cooldown:  # verify cooldown turn.
             return False
         return True
     
-    def applyCoseSpell(self, user: "Character", battle: "Battle"):
+    def applyCoseSpell(self, user: "Character"):
         user.mana.sub(self.mana_cost)
         user.stamina.sub(self.stamina_cost)
-        self.turn_when_use = battle.turn  # update cooldown turn.
+        self.turn_when_use = user.battle.turn  # update cooldown turn.
 
     # ------>
 

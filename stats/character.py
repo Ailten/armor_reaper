@@ -56,7 +56,7 @@ class Character:
             "target": target
         }
         self.status_effects.proc(StatusEffectProc.WhenAtk, package_effect)
-        val_eval = package_effect.get(val_eval)
+        val_eval = package_effect.get('val_eval')
 
         damage_maked, log = target.takeDamage(val_eval, elem, damage_dealer = target)
 
@@ -80,7 +80,7 @@ class Character:
             "target": target
         }
         self.status_effects.proc(StatusEffectProc.WhenHeal, package_effect)
-        val_eval = package_effect.get(val_eval)
+        val_eval = package_effect.get('val_eval')
 
         heal_maked, log = target.takeHeal(val_eval, elem, heal_dealer = target)
 
@@ -106,7 +106,7 @@ class Character:
             "damage_dealer": damage_dealer
         }
         self.status_effects.proc(StatusEffectProc.WhenTakeDamage, package_effect)
-        val_eval = package_effect.get(val_eval)
+        val_eval = package_effect.get('val_eval')
 
         self.hp.sub(val_eval)
 
@@ -133,7 +133,7 @@ class Character:
             "heal_dealer": heal_dealer
         }
         self.status_effects.proc(StatusEffectProc.WhenTakeHeal, package_effect)
-        val_eval = package_effect.get(val_eval)
+        val_eval = package_effect.get('val_eval')
         
         self.hp.add(val_eval)
 
@@ -195,7 +195,7 @@ class Character:
     # ------>
 
     def getSpellUsable(self) -> list[Spell]:
-        return [s for s in self.spells if s.isCanUse(self, self.battle)]
+        return [s for s in self.spells if s.isCanUse(self)]
 
     # ------>
 

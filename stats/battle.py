@@ -56,7 +56,7 @@ class Battle:
             # do turn.
             self.status_effect_proc_count = 0
             log_turn = character_turn.doTurn()
-            log.append(log_turn)
+            log.extend(log_turn)
 
             # expire effects.
             for c in self.characters:

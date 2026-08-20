@@ -25,7 +25,7 @@ class SmallPunch(Spell):
     #    # default spell (overide it in child class of all spell).
     #    log.append(f"{user.name} use {self.name}.")
     #
-    #    if not type(target).__name__ == "Character":  # default spell focus only one target.
+    #    if target == None or isinstance(target, list):  # default spell focus only one target.
     #        return log
     #
     #    # make damage.
