@@ -1,7 +1,7 @@
 
 from pydantic import BaseModel
 
-class UserCreateFormDto(BaseModel):
+class UserSessionDto(BaseModel):
+    id: int
     e_mail: str
-    password: str
     pseudo: str

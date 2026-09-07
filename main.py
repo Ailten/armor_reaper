@@ -5,10 +5,23 @@ from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 import src.controllers as controllers
 
+from starlette.middleware.sessions import SessionMiddleware
+
+from os import getenv
+from dotenv import load_dotenv
+
 
 # ------>
 
 app = FastAPI()
+
+load_dotenv()
+
+# for make session navigation.
+app.add_middleware(
+    SessionMiddleware,
+    secret_key=getenv('SESSION_SECRET_KEY')
+)
 
 app.mount('/public', StaticFiles(directory='src/public'), name='public')
 
