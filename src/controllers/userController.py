@@ -8,10 +8,9 @@ from fastapi.responses import RedirectResponse
 
 from src.services.userService import UserService
 from src.models.database import get_db_session
+from sqlalchemy.orm import Session
 
-from typing import TYPE_CHECKING
-if TYPE_CHECKING:
-    from sqlalchemy.orm import Session
+from src.utils.ErrorInjecor import injectError, resetError, redirectError, reachThePage
 
 
 # ------>
@@ -29,20 +28,54 @@ def login(
     """
     get page login.
     """
+
+    resetError(request.session)
+
+    reachThePage(request.session)
     return template.TemplateResponse(name='login.html', request=request)
 
 @user_router.post('/login', include_in_schema=False)
 def handleLogin(
     request: Request, 
-    user_login_form: UserLoginFormDto = Form()
+    user_login_form: UserLoginFormDto = Form(),
+    session: Session = Depends(get_db_session)
 ):
     """
     redirect from form login.
     """
 
-    # TODO: build the context with user.
+    resetError(request.session)
 
-    return RedirectResponse(url='/index', status_code=303)
+    user_service = UserService(session)
+
+    e_mail = user_login_form.e_mail.lower()
+    user = user_service.getByEMail(e_mail)
+
+    if user == None:
+        # TODO: inclue an error message : 'e_mail or password invalid'.
+        injectError(request.session, 'e_mail or password invalid')
+
+        redirectError(request.session)
+        return RedirectResponse(url='/user/login', status_code=303)
+    
+    # TODO: hash comparaison.
+    if user.password != user_login_form.password:
+        # TODO: inclue an error message : 'e_mail or password invalid'.
+        injectError(request.session, 'e_mail or password invalid')
+
+        redirectError(request.session)
+        return RedirectResponse(url='/user/login', status_code=303)
+
+    # log.
+    user_session = UserSessionDto(
+        id=user.id,
+        e_mail=user.e_mail,
+        pseudo=user.pseudo
+    )
+    request.session['user'] = user_session.model_dump()
+
+    redirectError(request.session)
+    return RedirectResponse(url='/', status_code=303)
 
 
 # ------>
@@ -54,34 +87,43 @@ def createUser(
     """
     get page login.
     """
+
+    resetError(request.session)
+
+    reachThePage(request.session)
     return template.TemplateResponse(name='createUser.html', request=request)
 
 @user_router.post('/createAcount', include_in_schema=False)
 def handleCreateUser(
     request: Request, 
-    user_login_form: UserCreateFormDto = Form(),
+    user_create_form: UserCreateFormDto = Form(),
     session: Session = Depends(get_db_session)
 ):
     """
     redirect from form login.
     """
 
+    resetError(request.session)
+
     user_service = UserService(session)
 
-    e_mail = user_login_form.e_mail.lower()
+    e_mail = user_create_form.e_mail.lower()
     user = user_service.getByEMail(e_mail)
 
     if user != None:
         # TODO: inclue an error message : 'this e_mail already has an acount'.
-        return RedirectResponse(url='/createAcount', status_code=303)
+        injectError(request.session, 'this e_mail already has an acount')
+
+        redirectError(request.session)
+        return RedirectResponse(url='/user/createAcount', status_code=303)
     
     # TODO: hash.
-    password_hash = user_login_form.password
+    password_hash = user_create_form.password
 
     user = User(
         e_mail=e_mail,
         password=password_hash,
-        pseudo=user_login_form.pseudo
+        pseudo=user_create_form.pseudo
     )
     
     try:
@@ -89,13 +131,18 @@ def handleCreateUser(
     except Exception as e:
         session.rollback()
         # TODO: sent error message : 'an error raise from the database'.
-        return RedirectResponse(url='/createAcount', status_code=303)
+        injectError(request.session, 'an error raise from the database')
+        
+        redirectError(request.session)
+        return RedirectResponse(url='/user/createAcount', status_code=303)
 
+    # log.
     user_session = UserSessionDto(
         id=user.id,
         e_mail=user.e_mail,
         pseudo=user.pseudo
     )
-    request.session["user"] = user_session
+    request.session['user'] = user_session.model_dump()
 
-    return RedirectResponse(url='/index', status_code=303)
+    redirectError(request.session)
+    return RedirectResponse(url='/', status_code=303)

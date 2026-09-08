@@ -1,9 +1,7 @@
 
 from abc import ABC
 
-from typing import TYPE_CHECKING
-if TYPE_CHECKING:
-    from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session
 
 class Service(ABC):
 

@@ -35,7 +35,7 @@ DB_URL = URL.create(
     port=DB_CONFIG.get('port'),
     database=DB_CONFIG.get('database'),        
 )
-engine = create_engine(DB_URL)
+engine = create_engine(DB_URL, connect_args={"connect_timeout": 5})
 
 # session builder.
 sessionLocal = sessionmaker(bind=engine)

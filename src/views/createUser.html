@@ -3,13 +3,24 @@
     <head>
         <title>Armor Reaper</title>
         <meta charset="utf-8"/>
+        <link rel="icon" href="{{ url_for('public', path='img/items/woodenSword.png') }}">
     </head>
     <body>
 
         <h1>Armor Reaper</h1>
         <h2>Create Acount</h2>
 
-        <form >
+        <p>{{ request.session }}</p>
+
+        {% if request.session.get('user') %}
+        <p>hello {{ request.session.get('user').pseudo }}</p>
+        {% endif %}
+
+        {% for error in request.session.get('errors') or [] %}
+            <p style="color: red;">{{ error }}</p>
+        {% endfor %}
+
+        <form action="" method="post">
 
             <labbel for="e_mail">e-mail : </labbel>
             <input type="input" name="e_mail" id="e_mail"/>
