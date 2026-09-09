@@ -2,7 +2,7 @@
 from fastapi import Request
 from starlette.middleware.base import BaseHTTPMiddleware
 
-
+# currently not use.
 class ErrorPopMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
 

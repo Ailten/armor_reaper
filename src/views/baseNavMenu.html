@@ -1,0 +1,23 @@
+{% extends 'basePage.html' %}
+
+
+{% block links_base %}
+<script src="http://127.0.0.1:8000/public/js/redirectMenu.js" type="text/javascript"></script>
+<link href="http://127.0.0.1:8000/public/css/navMenu.css" rel="stylesheet">
+{% block links %}
+{% endblock links %}
+{% endblock links_base %}
+
+
+{% block main_base %}
+<header>
+    <p>menu heer</p>
+</header>
+<section>
+    {% block main %}
+    {% endblock main %}
+</section>
+<footer>
+
+</footer>
+{% endblock main_base %}
