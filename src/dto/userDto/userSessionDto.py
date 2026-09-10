@@ -3,5 +3,15 @@ from pydantic import BaseModel
 
 class UserSessionDto(BaseModel):
     id: int
-    e_mail: str
     pseudo: str
+
+
+# ------>
+
+from src.models.user import User
+
+def castUserAsSessionDto(user: User) -> UserSessionDto:
+    return UserSessionDto(
+        id=user.id,
+        pseudo=user.pseudo
+    )

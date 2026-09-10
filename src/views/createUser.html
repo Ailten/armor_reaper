@@ -1,45 +1,33 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>Armor Reaper</title>
-        <meta charset="utf-8"/>
-        <link rel="icon" href="{{ url_for('public', path='img/items/woodenSword.png') }}">
-    </head>
-    <body>
+{% extends 'baseError.html' %}
 
-        <h1>Armor Reaper</h1>
-        <h2>Create Acount</h2>
 
-        <p>{{ request.session }}</p>
+{% block links %}
+{% endblock links %}
 
-        {% if request.session.get('user') %}
-        <p>hello {{ request.session.get('user').pseudo }}</p>
-        {% endif %}
 
-        {% for error in request.session.get('errors') or [] %}
-            <p style="color: red;">{{ error }}</p>
-        {% endfor %}
+{% block main %}
 
-        <form action="" method="post">
+<h2>Create Acount</h2>
 
-            <labbel for="e_mail">e-mail : </labbel>
-            <input type="input" name="e_mail" id="e_mail"/>
+<form action="" method="post">
 
-            <br/>
+    <labbel for="e_mail">e-mail : </labbel>
+    <input type="input" name="e_mail" id="e_mail"/>
 
-            <labbel for="password">password : </labbel>
-            <input type="password" name="password" id="password"/>
+    <br/>
 
-            <br/>
+    <labbel for="password">password : </labbel>
+    <input type="password" name="password" id="password"/>
 
-            <labbel for="pseudo">pseudo : </labbel>
-            <input type="input" name="pseudo" id="pseudo"/>
+    <br/>
 
-            <br/>
+    <labbel for="pseudo">pseudo : </labbel>
+    <input type="input" name="pseudo" id="pseudo"/>
 
-            <input type="submit" value="create"/>
+    <br/>
 
-        </form>
+    <input type="submit" value="create"/>
 
-    </body>
-</html>
+</form>
+
+{% endblock main %}

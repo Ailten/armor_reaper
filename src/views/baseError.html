@@ -1,0 +1,10 @@
+{% extends 'baseNavMenu.html' %}
+
+
+{% block errors %}
+
+{% for error in request.session.get('errors') or [] %}
+<p style="color: red;">{{ error }}</p>
+{% endfor%}
+
+{% endblock errors %}

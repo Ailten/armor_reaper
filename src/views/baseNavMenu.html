@@ -11,11 +11,51 @@
 
 {% block main_base %}
 <header>
-    <p>menu heer</p>
+
+    <div class="flex-center">
+        <div>
+            <h1>Armor Reaper</h1>
+        </div>
+        <div class="log-box align-right">
+            
+            {% if request.session.get('user') %}
+                <p>Hi {{ request.session.get('user').pseudo }} !</p>
+                <p>
+                    <a href="{{ url_for('logout') }}">disconnect</a>
+                </p>
+            {% else %}
+                <p>
+                    <a href="{{ url_for('login') }}">login</a>
+                </p>
+                <p>
+                    <a href="{{ url_for('createUser') }}">create acount</a>
+                </p>
+            {% endif%}
+
+        </div>
+    </div>
+
+    {% if request.session.get('user') %}
+    <p>hello {{ request.session.get('user').pseudo }}</p>
+    {% endif %}
+    
+    <nav>
+
+        <a href="{{ request.base_url }}">accueil</a>
+        
+        
+
+    </nav>
+
 </header>
 <section>
+
+    {% block errors %}
+    {% endblock errors %}
+
     {% block main %}
     {% endblock main %}
+
 </section>
 <footer>
 

@@ -10,7 +10,10 @@ from src.services.userService import UserService
 from src.models.database import get_db_session
 from sqlalchemy.orm import Session
 
-from src.utils.ErrorInjecor import injectError, resetError, redirectError, reachThePage
+from src.utils.errorInjecor import injectError, resetError, redirectError, reachThePage
+
+from src.utils.crypt import hashStr, compareHash
+from src.utils.sanitise import htmlSanitise
 
 
 # ------>
@@ -51,27 +54,24 @@ def handleLogin(
     e_mail = user_login_form.e_mail.lower()
     user = user_service.getByEMail(e_mail)
 
+    # no user with this email.
     if user == None:
-        # TODO: inclue an error message : 'e_mail or password invalid'.
+        
         injectError(request.session, 'e_mail or password invalid')
 
         redirectError(request.session)
         return RedirectResponse(url='/user/login', status_code=303)
     
-    # TODO: hash comparaison.
-    if user.password != user_login_form.password:
-        # TODO: inclue an error message : 'e_mail or password invalid'.
+    # compare hash password.
+    if not compareHash(user_login_form.password, user.password):
+
         injectError(request.session, 'e_mail or password invalid')
 
         redirectError(request.session)
         return RedirectResponse(url='/user/login', status_code=303)
 
     # log.
-    user_session = UserSessionDto(
-        id=user.id,
-        e_mail=user.e_mail,
-        pseudo=user.pseudo
-    )
+    user_session = castUserAsSessionDto(user)
     request.session['user'] = user_session.model_dump()
 
     redirectError(request.session)
@@ -111,38 +111,54 @@ def handleCreateUser(
     user = user_service.getByEMail(e_mail)
 
     if user != None:
-        # TODO: inclue an error message : 'this e_mail already has an acount'.
+        
         injectError(request.session, 'this e_mail already has an acount')
 
         redirectError(request.session)
         return RedirectResponse(url='/user/createAcount', status_code=303)
     
-    # TODO: hash.
-    password_hash = user_create_form.password
+    # hash password.
+    password_hash = hashStr(user_create_form.password)
 
     user = User(
         e_mail=e_mail,
         password=password_hash,
-        pseudo=user_create_form.pseudo
+        pseudo=htmlSanitise(user_create_form.pseudo)
     )
     
     try:
         user_service.create(user)
     except Exception as e:
         session.rollback()
-        # TODO: sent error message : 'an error raise from the database'.
+        
         injectError(request.session, 'an error raise from the database')
         
         redirectError(request.session)
         return RedirectResponse(url='/user/createAcount', status_code=303)
 
     # log.
-    user_session = UserSessionDto(
-        id=user.id,
-        e_mail=user.e_mail,
-        pseudo=user.pseudo
-    )
+    user_session = castUserAsSessionDto(user)
     request.session['user'] = user_session.model_dump()
+
+    redirectError(request.session)
+    return RedirectResponse(url='/', status_code=303)
+
+
+# ------>
+
+@user_router.get('/logout')
+def logout(
+    request: Request
+):
+    """
+    logout user and redirect to index.
+    """
+
+    resetError(request.session)
+
+    # remove user from session.
+    if 'user' in request.session:
+        del request.session['user']
 
     redirectError(request.session)
     return RedirectResponse(url='/', status_code=303)

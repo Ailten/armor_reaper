@@ -11,7 +11,7 @@ from starlette.middleware.sessions import SessionMiddleware
 from os import getenv
 from dotenv import load_dotenv
 
-from src.utils.ErrorInjecor import resetError, reachThePage
+from src.utils.errorInjecor import resetError, reachThePage, redirectError
 
 
 # ------>
@@ -54,6 +54,5 @@ async def baseRoot(request: Request):
     reachThePage(request.session)
     return template.TemplateResponse(
         name='index.html', 
-        request=request, 
-        context={}
+        request=request
     )
