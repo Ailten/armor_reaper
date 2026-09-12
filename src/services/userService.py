@@ -12,8 +12,8 @@ class UserService(Service):
         return self.session.scalar(
             select(User).where(User.e_mail == user_e_mail)
         )
-    
-    def create(self, user: User):
-        self.session.add(user)
-        self.session.commit()
-        self.session.refresh(user)
+
+    def getByPseudo(self, pseudo: str) -> User|None:
+        return self.session.scalar(
+            select(User).where(User.pseudo == pseudo)
+        )

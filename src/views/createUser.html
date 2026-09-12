@@ -12,7 +12,7 @@
 <form action="" method="post">
 
     <labbel for="e_mail">e-mail : </labbel>
-    <input type="input" name="e_mail" id="e_mail"/>
+    <input type="input" name="e_mail" id="e_mail" value="{{ request.session.get('dto_form', {}).get('e_mail', '') }}"/>
 
     <br/>
 
@@ -22,7 +22,11 @@
     <br/>
 
     <labbel for="pseudo">pseudo : </labbel>
-    <input type="input" name="pseudo" id="pseudo"/>
+    <input type="input" name="pseudo" id="pseudo" value="{{ request.session.get('dto_form', {}).get('pseudo', '') }}"/>
+    {% set pseudo_error = request.session.get('errors').get('pseudo') %}
+    {% if pseudo_error %}
+        <span style="color: red;">{{ pseudo_error }}</span>
+    {% endif %}
 
     <br/>
 

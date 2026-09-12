@@ -10,7 +10,8 @@ from src.services.userService import UserService
 from src.models.database import get_db_session
 from sqlalchemy.orm import Session
 
-from src.utils.errorInjecor import injectError, resetError, redirectError, reachThePage
+from src.utils.errorInjecor import *
+from src.utils.errorView import ErrorView
 
 from src.utils.crypt import hashStr, compareHash
 from src.utils.sanitise import htmlSanitise
@@ -57,7 +58,9 @@ def handleLogin(
     # no user with this email.
     if user == None:
         
-        injectError(request.session, 'e_mail or password invalid')
+        injectError(request.session, ErrorView('e_mail or password invalid'))
+        injectDtoForm(request.session, user_login_form)
+        del request.session.get('dto_form')['password']
 
         redirectError(request.session)
         return RedirectResponse(url='/user/login', status_code=303)
@@ -65,7 +68,9 @@ def handleLogin(
     # compare hash password.
     if not compareHash(user_login_form.password, user.password):
 
-        injectError(request.session, 'e_mail or password invalid')
+        injectError(request.session, ErrorView('e_mail or password invalid'))
+        injectDtoForm(request.session, user_login_form)
+        del request.session.get('dto_form')['password']
 
         redirectError(request.session)
         return RedirectResponse(url='/user/login', status_code=303)
@@ -112,18 +117,32 @@ def handleCreateUser(
 
     if user != None:
         
-        injectError(request.session, 'this e_mail already has an acount')
+        injectError(request.session, ErrorView('this e_mail already has an acount'))
+        injectDtoForm(request.session, user_create_form)
+        del request.session.get('dto_form')['password']
 
         redirectError(request.session)
         return RedirectResponse(url='/user/createAcount', status_code=303)
     
+    # check if pseudo already used.
+    pseudo_sanitise = htmlSanitise(user_create_form.pseudo)
+    user_pseudo = user_service.getByPseudo(pseudo_sanitise)
+    if user_pseudo != None:
+        
+        injectError(request.session, ErrorView('pseudo already used by someone else', input_name='pseudo'))
+        injectDtoForm(request.session, user_create_form)
+        del request.session.get('dto_form')['password']
+
+        redirectError(request.session)
+        return RedirectResponse(url='/user/createAcount', status_code=303)
+
     # hash password.
     password_hash = hashStr(user_create_form.password)
 
     user = User(
         e_mail=e_mail,
         password=password_hash,
-        pseudo=htmlSanitise(user_create_form.pseudo)
+        pseudo=pseudo_sanitise
     )
     
     try:
@@ -131,7 +150,9 @@ def handleCreateUser(
     except Exception as e:
         session.rollback()
         
-        injectError(request.session, 'an error raise from the database')
+        injectError(request.session, ErrorView('an error raise from the database'))
+        injectDtoForm(request.session, user_create_form)
+        del request.session.get('dto_form')['password']
         
         redirectError(request.session)
         return RedirectResponse(url='/user/createAcount', status_code=303)

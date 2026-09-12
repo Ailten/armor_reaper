@@ -7,7 +7,7 @@ CREATE TABLE `users` (
     `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `e_mail` varchar(100) NOT NULL unique,
     `password` char(60) NOT NULL,  -- 60 for bcrypt.
-    `pseudo` varchar(100) NOT NULL DEFAULT "Anon"
+    `pseudo` varchar(100) NOT NULL unique
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 INSERT INTO `users` (`e_mail`, `password`, `pseudo`) VALUES 

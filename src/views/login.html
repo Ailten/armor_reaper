@@ -17,7 +17,7 @@
     <br/>
 
     <labbel>password : </labbel>
-    <input type="password" name="password" id="password"/>
+    <input type="password" name="password" id="password" value="{{ request.session.get('dto_form', {}).get('e_mail', '') }}"/>
 
     <br/>
 

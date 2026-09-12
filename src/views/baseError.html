@@ -3,8 +3,8 @@
 
 {% block errors %}
 
-{% for error in request.session.get('errors') or [] %}
+{% for error in request.session.get('errors').get('generic') %}
 <p style="color: red;">{{ error }}</p>
-{% endfor%}
+{% endfor %}
 
 {% endblock errors %}
