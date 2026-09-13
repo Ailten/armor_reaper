@@ -10,3 +10,8 @@ class User(BaseModel):
     e_mail: Mapped[str]
     password: Mapped[str]
     pseudo: Mapped[str]
+
+    adventurer_allow: Mapped[int]
+    gold: Mapped[int]
+    energy: Mapped[int]
+    energy_max: Mapped[int]

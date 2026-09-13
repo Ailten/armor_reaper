@@ -13,10 +13,12 @@ from dotenv import load_dotenv
 
 from src.utils.errorInjecor import resetError, reachThePage, redirectError
 
+from src.utils.deamonExec import lifespan
+
 
 # ------>
 
-app = FastAPI()
+app = FastAPI(lifespan=lifespan)
 
 load_dotenv()
 

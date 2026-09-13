@@ -1,0 +1,20 @@
+{% extends 'baseError.html' %}
+
+
+{% block links %}
+{% endblock links %}
+
+
+{% block main %}
+
+<h2>Adventurers</h2>
+
+{% for adventurer in adventurers %}
+    <p>{{ adventurer.pseudo }} - (Adventurer)
+        <a href="{{ url_for('deleteAdventurer', adventurer_id=adventurer.id) }}">delete</a>
+    </p>
+{% else %}
+    <p>no adventurers.</p>
+{% endfor %}
+
+{% endblock main %}
