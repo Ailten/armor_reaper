@@ -2,7 +2,9 @@
 
 USE `armor_reaper`;
 
+DROP TABLE IF EXISTS `adventurers`;
 DROP TABLE IF EXISTS `users`;
+
 CREATE TABLE `users` (
     `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `e_mail` varchar(100) NOT NULL unique,
@@ -19,7 +21,6 @@ INSERT INTO `users` (`e_mail`, `password`, `pseudo`) VALUES
 ("ailten@hotmail.com", "$2b$12$Q2uSukmD2EHI.d1/xbryOeJ1Rh8GBVf1DXawwROWTnxH9QAVelFd2", "Ailten");  -- password raw = "test".
 
 
-DROP TABLE IF EXISTS `adventurers`;
 CREATE TABLE `adventurers` (
     `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `id_user` int(11) not null,
@@ -27,7 +28,10 @@ CREATE TABLE `adventurers` (
         FOREIGN KEY (`id_user`)
         REFERENCES `users`(`id`)
         ON DELETE CASCADE,
-    `pseudo` varchar(100) NOT NULL unique
+    `pseudo` varchar(100) NOT NULL unique,
+
+    `lvl` int not null default 1,
+    `xp` smallint not null default 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 INSERT INTO `adventurers` (`id_user`, `pseudo`) VALUES 

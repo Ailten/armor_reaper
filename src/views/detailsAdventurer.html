@@ -1,0 +1,38 @@
+{% extends 'baseError.html' %}
+
+
+{% block links %}
+{% endblock links %}
+
+
+{% block main %}
+
+<h2>Details Adventurer</h2>
+
+<table>
+    <tr>
+        <th colspan="3">Details</th>
+    </tr>
+    <tr>
+        <td>Name</td>
+        <td>:</td>
+        <td>{{ adventurer.pseudo }}</td>
+    </tr>
+    <tr>
+        <td>level</td>
+        <td>:</td>
+        <td>{{ adventurer.lvl }}</td>
+    </tr>
+    <tr>
+        <td>xp</td>
+        <td>:</td>
+        <td>{{ adventurer.xp }}</td>
+    </tr>
+    <tr>
+        <td colspan="3">
+            <progress max="{{ xp_need }}" value="{{ adventurer.xp }}"></progress>
+        </td>
+    </tr>
+</table>
+
+{% endblock main %}

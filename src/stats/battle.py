@@ -1,98 +1,121 @@
 
-import typing
-
-if typing.TYPE_CHECKING:
-    from .character import Character
+from .character import Character
 
 class Battle:
-    status_effect_proc_max: int = 30
 
     def __init__(self):
-        self.status_effect_index = 0
-        self.character_index = 0
         self.turn = 0
         self.character_turn = 0
 
         self.characters: list[Character] = []
 
-        self.status_effect_proc_count = 0
+        # index count (to assigne).
+        self.index_character = 0
+
+        self.logs: list[str] = []
 
     # ------>
 
-    def getNextIndexStatusEffect(self) -> int:
-        index_out = self.status_effect_index
-        self.status_effect_index += 1
-        return index_out
-    
-    def getNextIndexCharacter(self) -> int:
-        index_out = self.character_index
-        self.character_index += 1
-        return index_out
+    def getCharacterTurn(self) -> Character:
+        self.characters[self.character_turn]
+
+    def increaseCharacterTurn(self):
+        # prevent from infinit recurs.
+        if any([c.is_death for c in self.characters]):
+            return
+        
+        self.character_turn += 1
+        if self.character_turn >= len(self.characters):
+            self.turn += 1
+        self.character_turn %= len(self.characters)
+
+        # move to next character if next one is dead.
+        if self.getCharacterTurn().is_death:
+            self.increaseCharacterTurn()
+
+    def isFightEnd(self) -> bool:
+        teams = [0, 0]
+        for c in self.characters:
+            if c.is_death:
+                continue
+            teams[0 if c.is_left_team else 1] += 1
+            if teams[0] > 0 and teams[1] > 0:
+                return False
+        return True
     
     # ------>
 
-    def spawn(self, character_to_spawn: "Character"):
-        character_to_spawn.setIndex(self)
+    def spawn(self, character_to_spawn: "Character", is_left_team: bool):
+        self.index_character += 1
+        character_to_spawn.index = self.index_character
         self.characters.append(character_to_spawn)
         character_to_spawn.battle = self
+        character_to_spawn.is_left_team = is_left_team
 
     # ------>
 
-    def getLogSimulateFight(self) -> list[str]:
-        log = ['--- fight stats ---']
+    def simulateFight(self):
 
-        def increaseCharacterTurn(battle: Battle):
-            battle.character_turn = (battle.character_turn + 1) % len(battle.characters)
-            if battle.character_turn == 0:
-                self.turn += 1
+        # prep fight.
+        self.orderTurn()
+        for c in self.characters:  # order spells.
+            c.spells.sort(key=lambda s: s.priority_to_use, reverse=True)
 
         while not self.isFightEnd():
             character_turn = self.characters[self.character_turn]
 
-            if character_turn.is_dead:
-                increaseCharacterTurn(self)
-                continue
+            # pick spell to use.
+            spell = None
+            for s in character_turn.spells:
+                if s.isCanUse():
+                    spell = s
+                    break
 
-            # do turn.
-            self.status_effect_proc_count = 0
-            log_turn = character_turn.doTurn()
-            log.extend(log_turn)
+            # pick target.
+            targets = [ c for c in self.characters if (
+                spell.is_target_expected_oponent == (character_turn.is_left_team == c.is_left_team)
+            ) ]
+            spell.orderTargetPriority(targets)  # order.
+            targets = targets[:spell.target_expected_count]
 
-            # expire effects.
-            for c in self.characters:
-                c.status_effects.expire(self)
+            # use spell.
+            spell.use(
+                launcher=character_turn,
+                target=targets
+            )
 
-            increaseCharacterTurn(self)
+            # increase character turn (and turn).
+            self.increaseCharacterTurn()
 
-        log.append('--- fight end ---')
-        return log
 
     # ------>
 
+    # re-order character turn.
     def orderTurn(self):
-        characters_ordered: list[Character] = []
 
         # get character from both teams.
-        left_team = self.getCharactersFiltered(True)
-        right_team = self.getCharactersFiltered(False)
-        left_team.sort(key=lambda c: c.initiative, reverse=True)
-        right_team.sort(key=lambda c: c.initiative, reverse=True)
+        left_team = [c for c in self.characters if c.is_left_team]
+        right_team = [c for c in self.characters if not c.is_left_team]
+        left_team.sort(key=lambda c: c.lvl, reverse=True)
+        right_team.sort(key=lambda c: c.lvl, reverse=True)
 
         # eval first team pick.
         is_place_left_next = (
             len(left_team) >= len(right_team) if len(left_team) != len(right_team) else
-            left_team[0].initiative >= right_team[0].initiative
+            left_team[0].lvl >= right_team[0].lvl
         )
+
+        self.characters.clear()
 
         # loop one by one characters team pick.
         while True:
 
             # end of pick (when one of theme is empty, finish by the other).
             if len(left_team) == 0:
-                characters_ordered.extend(right_team)
+                self.characters.extend(right_team)
                 break
             if len(right_team) == 0:
-                characters_ordered.extend(left_team)
+                self.characters.extend(left_team)
                 break
 
             # pick one team odd. 
@@ -101,30 +124,6 @@ class Battle:
                 next_character = left_team.pop(0)
             else:
                 next_character = right_team.pop(0)
-            characters_ordered.append(next_character)
+            self.characters.append(next_character)
             is_place_left_next = not is_place_left_next
 
-        # apply new list.
-        self.characters = characters_ordered
-
-    # ------>
-
-    def getCharactersFiltered(self, is_left_team: bool|None=None, is_dead: bool|None=False) -> list["Character"]:
-        return [ c for c in self.characters if (
-            (is_left_team == None or c.is_team_left == is_left_team) and
-            (is_dead == None or c.is_dead == is_dead)
-        )]
-    
-    def getCharacterTurn(self) -> "Character":
-        return self.characters[self.character_turn]
-
-    # ------>
-
-    def isFightEnd(self) -> bool:
-        right_team_character_count = len(self.getCharactersFiltered(False))
-        if right_team_character_count == 0:
-            return True
-        left_team_character_count = len(self.getCharactersFiltered(True))
-        if left_team_character_count == 0:
-            return True
-        return False

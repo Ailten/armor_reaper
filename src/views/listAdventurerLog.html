@@ -11,7 +11,8 @@
 
 {% for adventurer in adventurers %}
     <p>{{ adventurer.pseudo }} - (Adventurer)
-        <a href="{{ url_for('deleteAdventurer', adventurer_id=adventurer.id) }}">delete</a>
+        <a href="{{ url_for('detailsAdventurer', adventurer_id=adventurer.id) }}" >details</a>
+        <a href="{{ url_for('deleteAdventurer', adventurer_id=adventurer.id) }}" style="color: red;">delete</a>
     </p>
 {% else %}
     <p>no adventurers.</p>

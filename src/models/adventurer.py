@@ -9,3 +9,6 @@ class Adventurer(BaseModel):
     id: Mapped[int] = mapped_column(primary_key=True)
     id_user: Mapped[int]
     pseudo: Mapped[str]
+
+    lvl: Mapped[int]
+    xp: Mapped[int]

@@ -18,6 +18,8 @@ from src.utils.errorView import ErrorView
 from src.utils.crypt import hashStr, compareHash
 from src.utils.sanitise import htmlSanitise
 
+from src.stats.xp import xpNeedToLvlUp
+
 
 # ------>
 
@@ -190,3 +192,30 @@ def deleteAdventurer(
     redirectError(request.session)
     return RedirectResponse(url='/adventurer/listAdventurerLog', status_code=303)
 
+# ------>
+
+@adventurer_router.get('/details/{adventurer_id}')
+def detailsAdventurer(
+    request: Request,
+    adventurer_id: int,
+    session: Session = Depends(get_db_session)
+):
+    """
+    page details about an adventurer.
+    """
+
+    adventurer_service = AdventurerService(session)
+
+    adventurer = adventurer_service.getById(adventurer_id)
+    if adventurer == None:
+    
+        injectError(request.session, ErrorView('adventurer not found'))
+        
+        redirectError(request.session)
+        return RedirectResponse(url='/adventurer/listAdventurerLog', status_code=303)
+
+    reachThePage(request.session)
+    return template.TemplateResponse(name='detailsAdventurer.html', request=request, context={
+        'adventurer': adventurer,
+        'xp_need': xpNeedToLvlUp(adventurer.lvl)
+    })

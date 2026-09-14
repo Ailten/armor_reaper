@@ -1,86 +1,57 @@
 
-import typing
-from typing import Optional
+from .element import *
 
-from .element import Element
-from .spell_type import SpellType
-
-if typing.TYPE_CHECKING:
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
     from .character import Character
-    from .battle import Battle
 
 class Spell:
-    default_spell: "Spell" = None
 
     def __init__(self):
         self.name = 'unknow-spell'
 
         self.turn_cooldown = 0
-        self.turn_when_use = 0
+        self.turn_when_use = 0  # stock last turn when use.
 
         self.element_spell = Element.NEUTRAL
-        self.spell_type = SpellType.DEFAULT
+        self.type_damage = TypeDamage.NEUTRAL
 
         self.mana_cost = 0
         self.stamina_cost = 0
 
-        self.is_can_crit = False
-        self.crit_purcent = 0
+        self.target_expected_count = 1  # 0, 1, N.
+        self.is_target_expected_oponent = True  # True = target should be an oponent team.
+
+        self.priority_to_use = 0
 
     # ------>
 
-    def use(self, user: "Character", target: Optional["Character"]|list["Character"]) -> list[str]:
-        log: list[str] = []
-
-        # default spell (overide it in child class of all spell).
-        log.append(f"{user.name} use {self.name}.")
-
-        if target == None or isinstance(target, list):  # default spell focus only one target.
-            return log
+    # to overide.
+    def use(self, launcher: "Character", targets: list["Character"]):
         
         # make damage.
-        damage_maked, logs_spell = user.atk(5, self.element_spell, target)
-        log.extend(logs_spell)
+        #launcher.atk(1, self.element_spell, targets[0])
 
         # buy mana/stamina cost (or other).
-        self.applyCoseSpell(user)
-
-        return log
+        self.applyCoseSpell(launcher)
     
     # ------>
 
-    def isCanUse(self, user: "Character") -> bool:
-        if self.mana_cost > user.mana.val:
+    def isCanUse(self, owner: "Character") -> bool:
+        if self.mana_cost > owner.mp.val:
             return False
-        if self.stamina_cost > user.stamina.val:
+        if self.stamina_cost > owner.sp.val:
             return False
-        if (self.turn_when_use - user.battle.turn) > self.turn_cooldown:  # verify cooldown turn.
+        if (self.turn_when_use - owner.battle.turn) > self.turn_cooldown:  # verify cooldown turn.
             return False
         return True
     
-    def applyCoseSpell(self, user: "Character"):
-        user.mana.sub(self.mana_cost)
-        user.stamina.sub(self.stamina_cost)
-        self.turn_when_use = user.battle.turn  # update cooldown turn.
+    def applyCoseSpell(self, owner: "Character"):
+        owner.mp.sub(self.mana_cost)
+        owner.sp.sub(self.stamina_cost)
+        self.turn_when_use = owner.battle.turn  # update cooldown turn.
 
     # ------>
 
-    @staticmethod
-    def getDefaultSpell() -> "Spell":
-
-        # singleton default spell.
-        if Spell.default_spell == None:
-            Spell.default_spell = Spell()
-            Spell.default_spell.name = "wait"
-
-        return Spell.default_spell
-
-    # ------>
-
-    def __repr__(self) -> str:
-        return (
-            f'[name: {self.name}] '+
-            f'(spell_type: {self.spell_type.getName()}) '+
-            f'(elem: {self.element_spell.getName()})'
-        )
-
+    def orderTargetPriority(self, targets: list["Character"]):
+        targets.sort(key=lambda t: t.hp.val)
