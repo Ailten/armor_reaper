@@ -18,4 +18,22 @@
     <p>no adventurers.</p>
 {% endfor %}
 
+<!-- form battle -->
+<!-- TODO: link to endpoit, maje fit package DTO (js?), test it -->
+<form action="" method="post">
+
+    {% for adventurer in adventurers %}
+        <label for="adv-name-{{ adventurer.name }}">{{ adventurer.name }}</label>
+        <input type="radio" id="adv-name-{{ adventurer.name }}" name="adventurers_id" value="{{ adventurer.id }}"/>
+    {% endfor %}
+
+    {% for mob_id in adventurers %}
+        <label for="adv-name-{{ adventurer.name }}">{{ adventurer.name }}</label>
+        <input type="radio" id="adv-name-{{ adventurer.name }}" name="adventurers_id" value="{{ adventurer.id }}"/>
+    {% endfor %}
+
+    <input type="submit" value="start battle"/>
+
+</form>
+
 {% endblock main %}

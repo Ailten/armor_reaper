@@ -1,0 +1,16 @@
+{% extends 'baseError.html' %}
+
+
+{% block links %}
+{% endblock links %}
+
+
+{% block main %}
+
+<h2>Battle</h2>
+
+{% for log in battles_logs %}
+    <p>{{ log }}</p>
+{% endfor %}
+
+{% endblock main %}

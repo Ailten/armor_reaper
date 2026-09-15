@@ -71,7 +71,7 @@ class Battle:
         # log.
         self.logs.append('fight start !')
 
-        while not self.isFightEnd():
+        while self.is_left_win == None:
             character_turn = self.characters[self.character_turn]
 
             # pick spell to use.

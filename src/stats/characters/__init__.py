@@ -1,10 +1,9 @@
 
-# -- Not use.
-
 # import all class.
 from pathlib import Path
 from importlib import import_module
 
+from ..character import Character
 
 __all__ = []
 
@@ -22,7 +21,7 @@ for file in Path(__file__).parent.glob('*.py'):
     for k,v in vars(module).items():
 
         # skip var not router.
-        if not type(v).__name__ == "APIRouter":
+        if not isinstance(v, Character):
             continue
 
         # add it.
