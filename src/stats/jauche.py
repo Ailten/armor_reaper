@@ -7,13 +7,15 @@ class Jauche:
 
     # ------>
 
-    def add(self, val_to_add: int):
-        self.val += val_to_add
-        self.val = min(self.val, self.max_val)
+    def add(self, val_to_add: int) -> int:
+        value_apply = min(val_to_add, self.max_val-self.val)
+        self.val += value_apply
+        return value_apply
 
-    def sub(self, val_to_sub: int):
-        self.val -= val_to_sub
-        self.val = max(self.val, 0)
+    def sub(self, val_to_sub: int) -> int:
+        value_apply = min(val_to_sub, self.val)
+        self.val -= value_apply
+        return value_apply
 
     # ------>
 

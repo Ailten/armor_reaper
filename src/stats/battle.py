@@ -14,6 +14,8 @@ class Battle:
 
         self.logs: list[str] = []
 
+        self.is_left_win: bool|None = None
+
     # ------>
 
     def getCharacterTurn(self) -> Character:
@@ -41,6 +43,11 @@ class Battle:
             teams[0 if c.is_left_team else 1] += 1
             if teams[0] > 0 and teams[1] > 0:
                 return False
+        
+        # stock info who win (prevent double kill).
+        if self.is_left_win == None:
+            self.is_left_win = teams[0] > 0
+
         return True
     
     # ------>
@@ -61,6 +68,9 @@ class Battle:
         for c in self.characters:  # order spells.
             c.spells.sort(key=lambda s: s.priority_to_use, reverse=True)
 
+        # log.
+        self.logs.append('fight start !')
+
         while not self.isFightEnd():
             character_turn = self.characters[self.character_turn]
 
@@ -79,7 +89,7 @@ class Battle:
             targets = targets[:spell.target_expected_count]
 
             # use spell.
-            spell.use(
+            spell.bodyUse(
                 launcher=character_turn,
                 target=targets
             )
@@ -87,6 +97,10 @@ class Battle:
             # increase character turn (and turn).
             self.increaseCharacterTurn()
 
+        # log.
+        self.logs.append('fight end !')
+        team_win = 'left' if self.is_left_win else 'right'
+        self.logs.append(f'{team_win} win !')
 
     # ------>
 

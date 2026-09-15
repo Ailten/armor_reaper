@@ -32,6 +32,16 @@ class Spell:
         # make damage.
         #launcher.atk(1, self.element_spell, targets[0])
 
+        launcher.battle.logs.append(f'nothing happend.')
+
+    def bodyUse(self, launcher: "Character", targets: list["Character"]):
+
+        # log.
+        launcher.battle.logs.append(f'{launcher.name} use {self.name} !')
+
+        # use.
+        self.use(self, launcher, targets)
+
         # buy mana/stamina cost (or other).
         self.applyCoseSpell(launcher)
     

@@ -27,7 +27,7 @@ class Character:
         self.mp = Jauche(dict_params.get('mp', 20))
         self.sp = Jauche(dict_params.get('sp', 20))
 
-        self.spells: list[Spell] = [ Wait ]
+        self.spells: list[Spell] = [ Wait() ]
 
         self.is_death = False
 
@@ -97,15 +97,23 @@ class Character:
 
         damage_eval = max(int(damage_eval), 0)
 
-        self.hp.sub(damage_eval)
+        damage_make = self.hp.sub(damage_eval)
 
-        if self.hp.val <= 0:
+        self.battle.logs.append(f'{self.name} : -{damage_make} HP')
+
+        if self.hp.val <= 0 and self.is_death == False:
             self.death()
 
     def death(self,
         killer: 'Character'|None
     ):
         self.is_death = True
+
+        # log.
+        self.battle.logs.append(f'{self.name} die.')
+
+        # check who win.
+        self.battle.isFightEnd()
 
     def heal(self, 
         target: 'Character',
@@ -137,7 +145,9 @@ class Character:
         
         heal_eval = max(int(heal_eval), 0)
 
-        self.hp.add(heal_eval)
+        heal_make = self.hp.add(heal_eval)
+
+        self.battle.logs.append(f'{self.name} : +{heal_make} HP')
 
     # ------>
 
@@ -151,3 +161,31 @@ class Character:
         stats -= oponent.getStats(carac)
         stats = max(stats, 0)
         return (stats / 100.0) + 1.0
+    
+    # ------>
+
+    def addSP(self, sp_add: int):
+        sp_add = self.sp.add(sp_add)
+
+        # logs.
+        self.battle.logs.append(f'{self.name} : +{sp_add} SP')
+
+    def subSP(self, sp_sub: int):
+        sp_sub = self.sp.add(sp_sub)
+
+        # logs.
+        self.battle.logs.append(f'{self.name} : -{sp_sub} SP')
+
+    def addMP(self, mp_add: int):
+        mp_add = self.mp.add(mp_add)
+
+        # logs.
+        self.battle.logs.append(f'{self.name} : +{mp_add} MP')
+
+    def subMP(self, mp_sub: int):
+        mp_sub = self.mp.add(mp_sub)
+
+        # logs.
+        self.battle.logs.append(f'{self.name} : -{mp_sub} MP')
+
+    # ------>

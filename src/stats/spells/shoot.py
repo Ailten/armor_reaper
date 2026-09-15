@@ -18,26 +18,35 @@ class Shoot(Spell):
         self.element_spell = Element.AIR
         self.type_damage = TypeDamage.MECANIC
 
-        self.priority_to_use = 120
+        self.priority_to_use = 90
+
+        self.target_expected_count = 2
 
     # ------>
 
     def use(self, launcher: "Character", targets: list["Character"]):
+        """
+        (1/6)
+          └ -12 HP (Air)
+        (5/6)
+          └ -1 HP (Air)
+        on 2 oponent.
+        """
 
-        if random.randint(1, 6) == 6:
-            launcher.atk(
-                target=targets[0],
-                damage=15,
-                element=self.element_spell,
-                type_damage=self.type_damage
-            )
-        else:
-            launcher.atk(
-                target=targets[0],
-                damage=1,
-                element=self.element_spell,
-                type_damage=self.type_damage
-            )
-
-        # buy mana/stamina cost (or other).
-        self.applyCoseSpell(launcher)
+        for i in range(self.target_expected_count):
+            current_target = targets[i%len(targets)]
+            
+            if random.randint(1, 6) == 6:
+                launcher.atk(
+                    target=current_target,
+                    damage=12,
+                    element=self.element_spell,
+                    type_damage=self.type_damage
+                )
+            else:
+                launcher.atk(
+                    target=current_target,
+                    damage=1,
+                    element=self.element_spell,
+                    type_damage=self.type_damage
+                )

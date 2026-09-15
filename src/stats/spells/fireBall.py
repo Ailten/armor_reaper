@@ -6,6 +6,8 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from ..character import Character
 
+import random
+
 class FireBall(Spell):
 
     def __init__(self):
@@ -25,13 +27,13 @@ class FireBall(Spell):
     # ------>
 
     def use(self, launcher: "Character", targets: list["Character"]):
+        """
+        -5~8 HP (Fire)
+        """
 
         launcher.atk(
             target=targets[0],
-            damage=8,
+            damage=random.randint(5,8),
             element=self.element_spell,
             type_damage=self.type_damage
         )
-
-        # buy mana/stamina cost (or other).
-        self.applyCoseSpell(launcher)

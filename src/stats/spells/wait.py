@@ -4,6 +4,8 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from ..character import Character
 
+import random
+
 class Wait(Spell):
 
     def __init__(self):
@@ -13,12 +15,16 @@ class Wait(Spell):
 
         self.priority_to_use = 0
 
+        self.target_expected_count = 0
+        self.is_target_expected_oponent = False
+
     # ------>
 
     def use(self, launcher: "Character", targets: list["Character"]):
+        """
+        +2~4 SP (self)
+        +2~4 MP (self)
+        """
 
-        launcher.sp.add(2)
-        launcher.mp.add(2)
-
-        # buy mana/stamina cost (or other).
-        self.applyCoseSpell(launcher)
+        launcher.addSP(random.randint(2, 4))
+        launcher.addMP(random.randint(2, 4))
