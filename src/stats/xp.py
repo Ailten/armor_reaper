@@ -1,4 +1,7 @@
 
+from functools import cache
+
+@cache
 def xpNeedToLvlUp(lvl: int) -> int:
     
     xp_need = 10
