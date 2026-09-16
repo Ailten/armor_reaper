@@ -21,4 +21,8 @@ class Service(ABC):
         self.session.delete(model)
         self.session.commit()
 
+    def update(self, model: "BaseModel"):
+        self.session.commit()
+        self.session.refresh(model)
+
     

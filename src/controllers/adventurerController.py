@@ -131,7 +131,7 @@ def listAdventurerLog(
 
     reachThePage(request.session)
     return template.TemplateResponse(name='listAdventurerLog.html', request=request, context={
-        'adventurers': list_adventurer
+        'adventurers': list(list_adventurer)
     })
 
 # ------>

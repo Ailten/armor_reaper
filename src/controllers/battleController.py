@@ -7,8 +7,11 @@ from src.dto.battleDto import *
 from fastapi.responses import RedirectResponse
 
 from src.services.adventurerService import AdventurerService
+from src.services.treeSkillService import TreeSkillService
 from src.models.database import get_db_session
 from sqlalchemy.orm import Session
+
+from src.models.adventurer import Adventurer
 
 from src.utils.errorInjecor import *
 from src.utils.errorView import ErrorView
@@ -16,12 +19,12 @@ from src.utils.errorView import ErrorView
 from src.utils.crypt import hashStr, compareHash
 from src.utils.sanitise import htmlSanitise
 
-from src.stats.xp import xpNeedToLvlUp
-
 from src.stats.character import Character
 from src.stats.battle import Battle
 from src.stats.mobs import mobsIdToCharacter
 from src.stats.treeSkills import *
+from src.stats.treeSkill import getTreeSkillInjector
+from src.stats.xp import xpNeedToLvlUp
 
 # ------>
 
@@ -31,10 +34,10 @@ template = Jinja2Templates(directory='src/views')
 
 # ------>
 
-@battle_router.get('/simulateBattle')
-def createAdventurer(
+@battle_router.post('/simulateBattle')
+def simulateBattle(
     request: Request,
-    start_battle_dto: StartBattleDto,
+    start_battle_dto: StartBattleDto = Form(),
     session: Session = Depends(get_db_session)
 ):
     """
@@ -42,6 +45,7 @@ def createAdventurer(
     """
 
     adventurer_service = AdventurerService(session)
+    tree_skill_service = TreeSkillService(session)
 
     # checks amount of adventurers.
     if len(start_battle_dto.adventurers_id) < 1 or len(start_battle_dto.adventurers_id) > 3:
@@ -58,8 +62,10 @@ def createAdventurer(
     battle = Battle()
 
     # inject adventurer in battle.
+    adventurer_models: list[Adventurer] = []
     for adventurer_id in start_battle_dto.adventurers_id:
         adventurer = adventurer_service.getById(adventurer_id)
+        adventurer_models.append(adventurer)
 
         # one adventurer is not found.
         if adventurer == None:
@@ -82,8 +88,11 @@ def createAdventurer(
         # cast Adventurer model into Character.
         adventurer_character = Character(vars(adventurer))
 
-        # TODO: inject skillsTree (based on adventurer model).
-        mercenaryTree(adventurer_character)
+        # inject tree skills.
+        tree_skills = tree_skill_service.getByAdventurer(adventurer.id)
+        for tree_skill in tree_skills:
+            func_tree_skill_injector = getTreeSkillInjector(tree_skill.id)
+            func_tree_skill_injector(adventurer_character)
 
         # inject.
         battle.spawn(adventurer_character, is_left_team=True)
@@ -104,6 +113,41 @@ def createAdventurer(
 
     # simulate fight.
     battle.simulateFight()
+
+    # loot, gold, and xp.
+    if battle.is_left_win == True:
+
+        # get structur of data (character, adventurer, model).
+        adventurer_characters = battle.getWinnerCharacter()
+        adventurer_models_match = [ next(
+            [ cm for cm in adventurer_models if (
+                ac.name == cm.pseudo  # get by match pseudo.
+            )].__iter__()
+        ) for ac in adventurer_characters ]
+
+        # get xp data.
+        total_xp = sum([ m.xp for m in battle.getLooserCharacter() ])
+        split_xp = total_xp // len(adventurer_characters)
+
+        # xp.
+        for adv_i in range(len(adventurer_models_match)):
+            adventurer_model = adventurer_models_match[adv_i]
+
+            adventurer_model.xp += split_xp
+            xp_need_to_lvl_up = xpNeedToLvlUp(adventurer_model.lvl)
+            while adventurer_model.xp >= xp_need_to_lvl_up:  # loop lvl up.
+                adventurer_model.xp -= xp_need_to_lvl_up
+                adventurer_model.lvl += 1
+                xp_need_to_lvl_up = xpNeedToLvlUp(adventurer_model.lvl)
+    
+            # save adventurer.
+            try:
+                adventurer_service.update(adventurer_model)
+            except Exception as e:
+                injectError(request.session, ErrorView('an adventurer has ocur an error to saving progression'))
+
+
+        # TODO: loot and gold.
 
     reachThePage(request.session)
     return template.TemplateResponse(name='battle.html', request=request, context={

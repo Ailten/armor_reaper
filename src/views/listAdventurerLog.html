@@ -19,22 +19,37 @@
 {% endfor %}
 
 <!-- form battle -->
-<!-- TODO: link to endpoit, maje fit package DTO (js?), test it -->
-<!-- test -->
-<form action="" method="post">
+<!-- TODO: maje fit package DTO (js?), test it -->
+{% if adventurers %}
+<form action="{{ url_for('simulateBattle') }}" method="post">
 
-    {% for adventurer in adventurers %}
-        <label for="adv-name-{{ adventurer.name }}">{{ adventurer.name }}</label>
-        <input type="radio" id="adv-name-{{ adventurer.name }}" name="adventurers_id" value="{{ adventurer.id }}"/>
-    {% endfor %}
+    <fieldset style="width: fit-content;">
+        <legend>adventurers : </legend>
 
-    {% for mob_id in adventurers %}
-        <label for="adv-name-{{ adventurer.name }}">{{ adventurer.name }}</label>
-        <input type="radio" id="adv-name-{{ adventurer.name }}" name="adventurers_id" value="{{ adventurer.id }}"/>
-    {% endfor %}
+        {% for adventurer in adventurers %}
+            <p>
+                <label for="adv-name-{{ adventurer.pseudo }}">{{ adventurer.pseudo }}</label>
+                <input type="checkbox" id="adv-name-{{ adventurer.pseudo }}" name="adventurers_id" value="{{ adventurer.id }}"/>
+            </p>
+        {% endfor %}
+
+    </fieldset>
+
+    <fieldset style="width: fit-content;">
+        <legend>mobs : </legend>
+
+        {% for mob in [{'name':'Slime', 'id':1}] %}
+            <p>
+                <label for="mob-name-{{ mob.name }}">{{ mob.name }}</label>
+                <input type="checkbox" id="mob-name-{{ mob.name }}" name="mobs_id" value="{{ mob.id }}"/>
+            </p>
+        {% endfor %}
+
+    </fieldset>
 
     <input type="submit" value="start battle"/>
 
 </form>
+{% endif %}
 
 {% endblock main %}

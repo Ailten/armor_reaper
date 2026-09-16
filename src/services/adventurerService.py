@@ -21,5 +21,5 @@ class AdventurerService(Service):
     def getAllByUser(self, user_id: int) -> list[Adventurer]:
         return self.session.scalars(
             select(Adventurer).where(Adventurer.id_user == user_id)
-        )
+        ).all()
     

@@ -40,7 +40,7 @@ class Spell:
         launcher.battle.logs.append(f'{launcher.name} use {self.name} !')
 
         # use.
-        self.use(self, launcher, targets)
+        self.use(launcher, targets)
 
         # buy mana/stamina cost (or other).
         self.applyCoseSpell(launcher)

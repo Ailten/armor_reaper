@@ -3,7 +3,7 @@ from .jauche import Jauche
 from .element import Element, TypeDamage
 from .caracs import Caracs
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 if TYPE_CHECKING:
     from .battle import Battle
     from .spell import Spell
@@ -53,7 +53,9 @@ class Character:
                 continue
             self.__setattr__(carac_name, base_carac + value)
 
-    def getStats(self, carac: Caracs) -> int:
+    def getStats(self, carac: Caracs|None) -> int:
+        if carac == None:
+            return 0
         carac_name = carac.getName()
         if hasattr(self, carac_name):
             carac_get = getattr(self, carac_name)
@@ -78,14 +80,14 @@ class Character:
         damage_eval = max(int(damage_eval), 0)
 
         target.takeDamage(
-            laucher=self,
+            launcher=self,
             damage=damage_eval,
             element=element,
             type_damage=type_damage
         )
 
     def takeDamage(self,
-        laucher: 'Character'|None,
+        launcher: Optional['Character'],
         damage: int,
         element: Element=Element.NEUTRAL,
         type_damage: TypeDamage=TypeDamage.NEUTRAL
@@ -93,7 +95,7 @@ class Character:
         damage_eval = float(damage)
         
         # eval res mult.
-        damage_eval /= self.getMultTypeRes(type_damage, laucher)
+        damage_eval /= self.getMultTypeRes(type_damage, launcher)
 
         damage_eval = max(int(damage_eval), 0)
 
@@ -102,10 +104,10 @@ class Character:
         self.battle.logs.append(f'{self.name} : -{damage_make} HP')
 
         if self.hp.val <= 0 and self.is_death == False:
-            self.death()
+            self.death(launcher)
 
     def death(self,
-        killer: 'Character'|None
+        killer: Optional['Character']|None=None
     ):
         self.is_death = True
 
@@ -129,14 +131,14 @@ class Character:
         heal_eval = max(int(heal_eval), 0)
 
         target.takeHeal(
-            laucher=self,
+            launcher=self,
             heal=heal_eval,
             element=element,
             type_damage=type_damage
         )
 
     def takeHeal(self,
-        laucher: 'Character'|None,
+        launcher: Optional['Character'],
         heal: int,
         element: Element=Element.NEUTRAL,
         type_damage: TypeDamage=TypeDamage.NEUTRAL
@@ -152,13 +154,14 @@ class Character:
     # ------>
 
     def getMultTypeDamage(self, type_damage: TypeDamage) -> float:
-        stats_mult = self.getStats(type_damage.getCarac())
-        return (stats_mult / 100.0) + 1.0
+        carac = type_damage.getCarac()
+        stats = 0 if carac == None else self.getStats(carac)
+        return (stats / 100.0) + 1.0
     
     def getMultTypeRes(self, type_damage: TypeDamage, oponent: 'Character') -> float:
         carac = type_damage.getCarac()
-        stats = self.getStats(carac)
-        stats -= oponent.getStats(carac)
+        stats = 0 if carac == None else self.getStats(carac)
+        stats -= 0 if carac == None else oponent.getStats(carac)
         stats = max(stats, 0)
         return (stats / 100.0) + 1.0
     

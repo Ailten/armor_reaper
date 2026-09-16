@@ -1,6 +1,10 @@
 
 from .character import Character
 
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from .spell import Spell
+
 class Battle:
 
     def __init__(self):
@@ -19,17 +23,17 @@ class Battle:
     # ------>
 
     def getCharacterTurn(self) -> Character:
-        self.characters[self.character_turn]
+        return self.characters[self.character_turn]
 
     def increaseCharacterTurn(self):
-        # prevent from infinit recurs.
-        if any([c.is_death for c in self.characters]):
+        # do nothing if fight already end.
+        if self.is_left_win != None:
             return
         
         self.character_turn += 1
         if self.character_turn >= len(self.characters):
             self.turn += 1
-        self.character_turn %= len(self.characters)
+            self.character_turn %= len(self.characters)
 
         # move to next character if next one is dead.
         if self.getCharacterTurn().is_death:
@@ -72,27 +76,32 @@ class Battle:
         self.logs.append('fight start !')
 
         while self.is_left_win == None:
-            character_turn = self.characters[self.character_turn]
+            character_turn = self.getCharacterTurn()
 
             # pick spell to use.
-            spell = None
+            spell: Spell|None = None
             for s in character_turn.spells:
-                if s.isCanUse():
+                if s.isCanUse(character_turn):
                     spell = s
                     break
 
-            # pick target.
-            targets = [ c for c in self.characters if (
-                spell.is_target_expected_oponent == (character_turn.is_left_team == c.is_left_team)
-            ) ]
-            spell.orderTargetPriority(targets)  # order.
-            targets = targets[:spell.target_expected_count]
+            # theorically never use.
+            if spell == None:
+                self.logs.append(f'{character_turn.name} can do nothing.')
+            else:
 
-            # use spell.
-            spell.bodyUse(
-                launcher=character_turn,
-                target=targets
-            )
+                # pick target.
+                targets = [ c for c in self.characters if (
+                    spell.is_target_expected_oponent != (character_turn.is_left_team == c.is_left_team)
+                ) ]
+                spell.orderTargetPriority(targets)  # order.
+                targets = targets[:spell.target_expected_count]
+
+                # use spell.
+                spell.bodyUse(
+                    launcher=character_turn,
+                    targets=targets
+                )
 
             # increase character turn (and turn).
             self.increaseCharacterTurn()
@@ -141,3 +150,15 @@ class Battle:
             self.characters.append(next_character)
             is_place_left_next = not is_place_left_next
 
+    # ------>
+
+    def getWinnerCharacter(self) -> list[Character]:
+        return [c for c in self.characters if (
+            (c.is_left_team == self.is_left_win) and  # in winning team.
+            not c.is_death  # still in live at end of fight.
+        )]
+    
+    def getLooserCharacter(self) -> list[Character]:
+        return [c for c in self.characters if (
+            (c.is_left_team != self.is_left_win)  # in winning team.
+        )]
