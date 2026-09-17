@@ -2,15 +2,22 @@
 
 
 {% block links %}
+<script src="{{ url_for('public', path='js/battle.js') }}" type="text/javascript"></script>
+<link href="{{ url_for('public', path='css/battle.css') }}" rel="stylesheet" >
 {% endblock links %}
 
 
 {% block main %}
 
+<script>
+    const battleLog = {{ battle_logs | tojson }};
+</script>
+
 <h2>Battle</h2>
 
-{% for log in battle_logs %}
-    <p>{{ log }}</p>
-{% endfor %}
+<section id="battle-anime">
+    <div id="battle-sreen"></div>
+    <div id="battle-log"></div>
+</section>
 
 {% endblock main %}
