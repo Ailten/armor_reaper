@@ -31,6 +31,9 @@ class FireBall(Spell):
         -5~8 HP (Fire)
         """
 
+        if len(targets) == 0:
+            return
+
         launcher.atk(
             target=targets[0],
             damage=random.randint(5,8),

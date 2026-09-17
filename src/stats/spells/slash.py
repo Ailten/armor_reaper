@@ -28,6 +28,9 @@ class Slash(Spell):
         -3~5 HP (Hearth)
         """
 
+        if len(targets) == 0:
+            return
+
         launcher.atk(
             target=targets[0],
             damage=random.randint(3, 5),
