@@ -23,7 +23,7 @@ from src.stats.character import Character
 from src.stats.battle import Battle
 from src.stats.mobs import mobsIdToCharacter
 from src.stats.treeSkills import *
-from src.stats.treeSkill import getTreeSkillInjector
+from src.stats.treeSkill import injectTreeSkill
 from src.stats.xp import xpNeedToLvlUp
 
 # ------>
@@ -91,8 +91,7 @@ def simulateBattle(
         # inject tree skills.
         tree_skills = tree_skill_service.getByAdventurer(adventurer.id)
         for tree_skill in tree_skills:
-            func_tree_skill_injector = getTreeSkillInjector(tree_skill.id)
-            func_tree_skill_injector(adventurer_character)
+            injectTreeSkill(adventurer_character, tree_skill.id)
 
         # inject.
         battle.spawn(adventurer_character, is_left_team=True)
@@ -149,8 +148,13 @@ def simulateBattle(
 
         # TODO: loot and gold.
 
+    # build character type for frontend.
+    left_team = [ CharacterDto.castFromCharacter(c).model_dump() for c in battle.characters if c.is_left_team ]
+    right_team = [ CharacterDto.castFromCharacter(c).model_dump() for c in battle.characters if not c.is_left_team ]
+
     reachThePage(request.session)
     return template.TemplateResponse(name='battle.html', request=request, context={
         'battle_logs': battle.logs,
-        'battle_is_left_win': battle.is_left_win == True
+        'left_team': left_team,
+        'right_team': right_team
     })

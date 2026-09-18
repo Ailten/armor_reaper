@@ -36,8 +36,12 @@ class Character:
         self.is_left_team: bool|None = None
         self.battle: 'Battle'|None = None
 
+        self.is_player: bool = dict_params.get('is_player', True)
+        self.skin: str|None = None if self.is_player else self.name
+
     # ------>
 
+    # use in futur, for equipement or statusEffect.
     def addStats(self, stats: dict[Caracs,int], is_sub: bool=False):
         for k,v in stats.items():
             value = v if not is_sub else - v
@@ -101,7 +105,7 @@ class Character:
 
         damage_make = self.hp.sub(damage_eval)
 
-        self.battle.logs.append(f'{self.name} : -{damage_make} HP')
+        self.battle.logs.append((f'{self.name} : -{damage_make} HP', self.index))
 
         if self.hp.val <= 0 and self.is_death == False:
             self.death(launcher)
@@ -112,7 +116,7 @@ class Character:
         self.is_death = True
 
         # log.
-        self.battle.logs.append(f'{self.name} die.')
+        self.battle.logs.append((f'{self.name} die.', self.index))
 
         # check who win.
         self.battle.isFightEnd()
@@ -149,7 +153,7 @@ class Character:
 
         heal_make = self.hp.add(heal_eval)
 
-        self.battle.logs.append(f'{self.name} : +{heal_make} HP')
+        self.battle.logs.append((f'{self.name} : +{heal_make} HP', self.index))
 
     # ------>
 
@@ -171,24 +175,24 @@ class Character:
         sp_add = self.sp.add(sp_add)
 
         # logs.
-        self.battle.logs.append(f'{self.name} : +{sp_add} SP')
+        self.battle.logs.append((f'{self.name} : +{sp_add} SP', self.index))
 
     def subSP(self, sp_sub: int):
         sp_sub = self.sp.add(sp_sub)
 
         # logs.
-        self.battle.logs.append(f'{self.name} : -{sp_sub} SP')
+        self.battle.logs.append((f'{self.name} : -{sp_sub} SP', self.index))
 
     def addMP(self, mp_add: int):
         mp_add = self.mp.add(mp_add)
 
         # logs.
-        self.battle.logs.append(f'{self.name} : +{mp_add} MP')
+        self.battle.logs.append((f'{self.name} : +{mp_add} MP', self.index))
 
     def subMP(self, mp_sub: int):
         mp_sub = self.mp.add(mp_sub)
 
         # logs.
-        self.battle.logs.append(f'{self.name} : -{mp_sub} MP')
+        self.battle.logs.append((f'{self.name} : -{mp_sub} MP', self.index))
 
     # ------>

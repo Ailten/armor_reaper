@@ -16,7 +16,7 @@ class Battle:
         # index count (to assigne).
         self.index_character = 0
 
-        self.logs: list[str] = []
+        self.logs: list[(str,int)] = []  # str log line, int id main character.
 
         self.is_left_win: bool|None = None
 
@@ -73,7 +73,7 @@ class Battle:
             c.spells.sort(key=lambda s: s.priority_to_use, reverse=True)
 
         # log.
-        self.logs.append('fight start !')
+        self.logs.append(('fight start !', -1))
 
         while self.is_left_win == None:
             character_turn = self.getCharacterTurn()
@@ -87,7 +87,7 @@ class Battle:
 
             # theorically never use.
             if spell == None:
-                self.logs.append(f'{character_turn.name} can do nothing.')
+                self.logs.append((f'{character_turn.name} can do nothing.', character_turn.index))
             else:
 
                 # pick target.
@@ -107,9 +107,9 @@ class Battle:
             self.increaseCharacterTurn()
 
         # log.
-        self.logs.append('fight end !')
+        self.logs.append(('fight end !', -1))
         team_win = 'left' if self.is_left_win else 'right'
-        self.logs.append(f'{team_win} win !')
+        self.logs.append((f'{team_win} win !', -1))
 
     # ------>
 

@@ -9,19 +9,27 @@
     display: inline-block;
     border: 1px solid black;
     border-radius: 8px;
-}
-#battle-anime > div#battle-sreen {
-    width: 680px;
-    height: 100%;
-}
-#battle-anime > div#battle-log {
-    width: 250px;
-    height: 100%;
 
     overflow-y: hidden;
     overflow-x: hidden;
 }
+#battle-anime > div#battle-sreen {
+    width: 680px;
+    height: 100%;
+    position: relative;
+}
+#battle-anime > div#battle-log {
+    width: 250px;
+    height: 100%;
+}
 
 .battle-log-p {
     margin: 8px 8px;
+}
+
+.battle-character-dom {
+    position: absolute;
+    width: 100px;
+    aspect-ratio: 0.823;
+    background-size: cover;
 }

@@ -37,7 +37,7 @@ class Spell:
     def bodyUse(self, launcher: "Character", targets: list["Character"]):
 
         # log.
-        launcher.battle.logs.append(f'{launcher.name} use {self.name} !')
+        launcher.battle.logs.append((f'{launcher.name} use {self.name} !', launcher.index))
 
         # use.
         self.use(launcher, targets)

@@ -13,7 +13,9 @@ class Slime(Character):
 
             'hp': 32,
             'mp': 6,
-            'sp': 10
+            'sp': 10,
+
+            'is_player': False
         })
 
         self.spells.append( BulletWater() )

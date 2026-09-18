@@ -6,13 +6,22 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from character import Character
 
-def getTreeSkillInjector(tree_skill_id: int) -> Callable[["Character"], None]|None:
+from enum import IntEnum
+
+class TreeSkill(IntEnum):
+    MercaryTree = 1
+    MageTree = 2
+    MekaTree = 3
+
+def injectTreeSkill(character: "Character", tree_skill_id: int):
+
     match tree_skill_id:
         case 1:
-            return mercenaryTree
+            character.skin = character.skin or 'Mercenary'
+            return mercenaryTree(character)
         case 2:
-            return mageTree
+            character.skin = character.skin or 'Mage'
+            return mageTree(character)
         case 3:
-            return mekaTree
-    
-    return None
+            character.skin = character.skin or 'Meka'
+            return mekaTree(character)
