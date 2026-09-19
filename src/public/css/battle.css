@@ -32,4 +32,50 @@
     width: 100px;
     aspect-ratio: 0.823;
     background-size: cover;
+
+    animation-duration: 1s;
+}
+
+.character-move-left{
+    animation-name: character-move-left;
+}
+@keyframes character-move-left {
+    0% { margin-left: 0px; }
+    33% { margin-left: 20px; }
+    100% { margin-left: 0px; }
+}
+.character-move-right{
+    animation-name: character-move-right;
+}
+@keyframes character-move-right {
+    0% { margin-left: 0px; }
+    33% { margin-left: -20px; }
+    100% { margin-left: 0px; }
+}
+.character-die{
+    animation-name: character-die;
+}
+@keyframes character-die {
+    0% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+.stats-edit-fx{
+    position: absolute;
+
+    animation-name: stats-edit-fx-up;
+    animation-duration: 1s;
+}
+@keyframes stats-edit-fx-up {
+    0% { margin-top: 0px; }
+    100% { margin-top: -20px; visibility: hidden;}
+}
+.stats-edit-hp{
+    color: red;
+}
+.stats-edit-mp{
+    color: lightseagreen;
+}
+.stats-edit-sp{
+    color: limegreen;
 }
