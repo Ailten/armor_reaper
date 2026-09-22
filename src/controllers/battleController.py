@@ -8,6 +8,7 @@ from fastapi.responses import RedirectResponse
 
 from src.services.adventurerService import AdventurerService
 from src.services.treeSkillService import TreeSkillService
+from src.services.userService import UserService
 from src.models.database import get_db_session
 from sqlalchemy.orm import Session
 
@@ -46,6 +47,7 @@ def simulateBattle(
 
     adventurer_service = AdventurerService(session)
     tree_skill_service = TreeSkillService(session)
+    user_service = UserService(session)
 
     # checks amount of adventurers.
     if len(start_battle_dto.adventurers_id) < 1 or len(start_battle_dto.adventurers_id) > 3:
@@ -57,7 +59,33 @@ def simulateBattle(
         redirectError(request.session)
         return RedirectResponse(url='/adventurer/listAdventurerLog', status_code=303)
     
+    # get user data.
     user_id = request.session.get('user', {}).get('id', None)
+    user = user_service.getById(user_id)
+
+    # check if enouth energy for fight.
+    if user.energy <= 0:
+    
+        injectError(request.session, ErrorView('not enouth energy'))
+        if 'adventurers_to_battle' in request.session:
+            del request.session['adventurers_to_battle']
+        
+        redirectError(request.session)
+        return RedirectResponse(url='/adventurer/listAdventurerLog', status_code=303)
+
+    # buy energy cost.
+    user.energy -= 1
+    try:
+        user_service.update(user)
+    except:
+        session.rollback()
+    
+        injectError(request.session, ErrorView('error durring reducing energy user'))
+        if 'adventurers_to_battle' in request.session:
+            del request.session['adventurers_to_battle']
+        
+        redirectError(request.session)
+        return RedirectResponse(url='/adventurer/listAdventurerLog', status_code=303)
 
     battle = Battle()
 
@@ -69,6 +97,7 @@ def simulateBattle(
 
         # one adventurer is not found.
         if adventurer == None:
+            session.rollback()
     
             injectError(request.session, ErrorView('an adventurer selected is not found'))
             if 'adventurers_to_battle' in request.session:
@@ -79,6 +108,7 @@ def simulateBattle(
         
         # if not own by user log.
         if user_id != adventurer.id_user:
+            session.rollback()
         
             injectError(request.session, ErrorView('user log do not own the adventurer'))
         
@@ -101,6 +131,7 @@ def simulateBattle(
         mob_character = mobsIdToCharacter(mob_id)
 
         if mob_character == None:
+            session.rollback()
         
             injectError(request.session, ErrorView('a mob is not found'))
         

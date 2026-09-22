@@ -18,7 +18,16 @@
         <span style="color: red;">{{ pseudo_error }}</span>
     {% endif %}
 
-    <p>TODO: select class / custome competances (?)</p>
+    <label for="tree_skill">tree skill</label>
+    <select name="tree_skill" id="tree_skill">
+        <option value="1">Mercenary</option>
+        <option value="2">Mage</option>
+        <option value="3">Meka</option>
+    </select>
+    {% set tree_skill_error = request.session.get('errors').get('tree_skill') %}
+    {% if tree_skill_error %}
+        <span style="color: red;">{{ tree_skill_error }}</span>
+    {% endif %}
 
     <input type="submit" value="create"/>
 

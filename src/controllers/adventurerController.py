@@ -5,10 +5,12 @@ from fastapi.templating import Jinja2Templates
 
 from src.dto.adventurerDto import *
 from src.models.adventurer import Adventurer
+from models.joinAdventurerTreeSkill import JoinAdventurerTreeSkill
 from fastapi.responses import RedirectResponse
 
 from src.services.userService import UserService
 from src.services.adventurerService import AdventurerService
+from src.services.joinAdventurerTreeSkillService import JoinAdventurerTreeSkillService
 from src.models.database import get_db_session
 from sqlalchemy.orm import Session
 
@@ -16,7 +18,7 @@ from src.utils.errorInjecor import *
 from src.utils.errorView import ErrorView
 
 from src.utils.crypt import hashStr, compareHash
-from src.utils.sanitise import htmlSanitise
+from src.utils.sanitise import isContainsSpecialChars
 
 from src.stats.xp import xpNeedToLvlUp
 
@@ -56,6 +58,7 @@ def handleCreateAdventurer(
 
     user_service = UserService(session)
     adventurer_service = AdventurerService(session)
+    join_adv_tree_skill_service = JoinAdventurerTreeSkillService(session)
 
     user = user_service.getById(request.session.get('user', {}).get('id', -1))
     if user == None:
@@ -76,8 +79,18 @@ def handleCreateAdventurer(
         redirectError(request.session)
         return RedirectResponse(url='/adventurer/createAdventurer', status_code=303)
     
+    adventurer_pseudo = adventurer_create_form.pseudo
+
+    # check specail char (for html injection) and space (for regex on log during battle anime).
+    if isContainsSpecialChars(adventurer_pseudo, ['<', '>', '&', ' ']):
+        
+        injectError(request.session, ErrorView('no space or special chars', input_name='pseudo'))
+        injectDtoForm(request.session, adventurer_create_form)
+
+        redirectError(request.session)
+        return RedirectResponse(url='/adventurer/createAdventurer', status_code=303)
+
     # check pseudo free.
-    adventurer_pseudo = htmlSanitise(adventurer_create_form.pseudo)
     adventurer = adventurer_service.getByPseudo(adventurer_pseudo)
     if adventurer != None:
         
@@ -103,6 +116,33 @@ def handleCreateAdventurer(
         
         redirectError(request.session)
         return RedirectResponse(url='/adventurer/createAdventurer', status_code=303)
+    
+    # verify if tree skill is valid.
+    tree_skill_id = adventurer_create_form.tree_skill
+    if tree_skill_id <= 0 or tree_skill_id > 3:  # check if tree selected is valid.
+        session.rollback()
+        
+        injectError(request.session, ErrorView('tree skill invalid', input_name='tree_skill'))
+        injectDtoForm(request.session, adventurer_create_form)
+        
+        redirectError(request.session)
+        return RedirectResponse(url='/adventurer/createAdventurer', status_code=303)
+
+    # create join tree-skill.
+    try:
+        join_adv_tree_skill_service.create(JoinAdventurerTreeSkill(
+            id_adventurer=adventurer.id,
+            id_tree_skill=tree_skill_id
+        ))
+    except Exception as e:
+        session.rollback()
+        
+        injectError(request.session, ErrorView('an error ocure during DB asignement tree skill'))
+        injectDtoForm(request.session, adventurer_create_form)
+        
+        redirectError(request.session)
+        return RedirectResponse(url='/adventurer/createAdventurer', status_code=303)
+
 
     redirectError(request.session)
     return RedirectResponse(url='/adventurer/listAdventurerLog', status_code=303)

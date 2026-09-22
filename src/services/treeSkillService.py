@@ -4,7 +4,7 @@ from .service import Service
 from sqlalchemy import select
 
 from src.models.treeSkill import TreeSkill
-from src.models.joinAdventurersTreeSkill import JoinAdventurerTreeSkill
+from models.joinAdventurerTreeSkill import JoinAdventurerTreeSkill
 
 
 class TreeSkillService(Service):
