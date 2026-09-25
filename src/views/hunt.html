@@ -1,0 +1,19 @@
+{% extends 'baseError.html' %}
+
+
+{% block links %}
+{% endblock links %}
+
+
+{% block main %}
+
+<h2>Hunt</h2>
+
+
+
+<progress max="{{ request.session.get('user').energy }}" value="{{ request.session.get('user').energy_max }}"></progress>
+
+
+
+
+{% endblock main %}
