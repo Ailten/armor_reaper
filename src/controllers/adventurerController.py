@@ -11,6 +11,7 @@ from fastapi.responses import RedirectResponse
 from src.services.userService import UserService
 from src.services.adventurerService import AdventurerService
 from src.services.joinAdventurerTreeSkillService import JoinAdventurerTreeSkillService
+from src.services.treeSkillService import TreeSkillService
 from src.models.database import get_db_session
 from sqlalchemy.orm import Session
 
@@ -33,7 +34,8 @@ template = Jinja2Templates(directory='src/views')
 
 @adventurer_router.get('/createAdventurer')
 def createAdventurer(
-    request: Request
+    request: Request,
+    session: Session = Depends(get_db_session)
 ):
     """
     get page create adventurer.
@@ -41,8 +43,14 @@ def createAdventurer(
 
     resetError(request.session)
 
+    tree_skill_service = TreeSkillService(session)
+
+    tree_skill_class_player = tree_skill_service.getAllClassPlayer()
+
     reachThePage(request.session)
-    return template.TemplateResponse(name='createAdventurer.html', request=request)
+    return template.TemplateResponse(name='createAdventurer.html', request=request, context={
+        'tree_skill_class_player': tree_skill_class_player
+    })
 
 @adventurer_router.post('/createAdventurer')
 def handleCreateAdventurer(
@@ -119,7 +127,7 @@ def handleCreateAdventurer(
     
     # verify if tree skill is valid.
     tree_skill_id = adventurer_create_form.tree_skill
-    if tree_skill_id <= 0 or tree_skill_id > 3:  # check if tree selected is valid.
+    if not TreeSkillService.isClassPlayer(tree_skill_id):  # check if tree selected is valid.
         session.rollback()
         
         injectError(request.session, ErrorView('tree skill invalid', input_name='tree_skill'))

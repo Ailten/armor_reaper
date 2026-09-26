@@ -20,9 +20,9 @@
 
     <label for="tree_skill">tree skill</label>
     <select name="tree_skill" id="tree_skill">
-        <option value="1">Mercenary</option>
-        <option value="2">Mage</option>
-        <option value="3">Meka</option>
+        {% for tree_skill in tree_skill_class_player %}
+            <option value="{{ tree_skill.id }}">{{ tree_skill.name }}</option>
+        {% endfor %}
     </select>
     {% set tree_skill_error = request.session.get('errors').get('tree_skill') %}
     {% if tree_skill_error %}
