@@ -109,6 +109,23 @@ async function playAnimeLog(battleLog, mainCharacterId) {
         statsTxtDom.style.left = `${posX}px`;
         let posY = mainCharDom.offsetTop - statsTxtDom.offsetHeight;
         statsTxtDom.style.top = `${posY}px`;
+
+        // reducing stats jauge.
+        let jaugeDom = mainCharDom.querySelector(
+            strStatsEdit.endsWith('HP') ? '.hp-jauge':
+            strStatsEdit.endsWith('MP') ? '.mp-jauge':
+            '.sp-jauge'
+        );
+        if(jaugeDom != null){
+            let jaugeValue = Number(jaugeDom.getAttribute('value'));
+            let jaugeValueMax = Number(jaugeDom.getAttribute('max'));
+            let amountEdit = Number(strStatsEdit.match(/[0-9]+/)[0]);
+            if(strStatsEdit.contains('-')){
+                amountEdit *= -1;
+            }
+            jaugeValue += amountEdit
+            jaugeValue = Math.min(Math.max(jaugeValue, 0), jaugeValueMax);
+        }
         
         await sleep(1);
 
@@ -178,6 +195,13 @@ function createCharacterDom(team, isLeft=true){
             team.length-1-i:
             i
         )*10 + 10;
+
+        // add jauge stats:
+        let hpJauge = div.appendChild(document.createElement('progress'));
+        hpJauge.classList.append('stats-jauge', 'hp-jauge');
+        hpJauge.style.color = 'red';
+        hpJauge.setAttribute('max', characterData.hp);
+        hpJauge.setAttribute('value', characterData.hp);
 
     }
 
