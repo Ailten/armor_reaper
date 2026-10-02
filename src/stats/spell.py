@@ -61,6 +61,12 @@ class Spell:
         owner.sp.sub(self.stamina_cost)
         self.turn_when_use = owner.battle.turn  # update cooldown turn.
 
+        # log cost spell.
+        if self.mana_cost > 0:
+            owner.battle.logs.append((f'<mask>{owner.name} : -{self.mana_cost} MP', owner.index))
+        if self.stamina_cost > 0:
+            owner.battle.logs.append((f'<mask>{owner.name} : -{self.stamina_cost} SP', owner.index))
+
     # ------>
 
     def orderTargetPriority(self, targets: list["Character"]):

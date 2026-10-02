@@ -5,7 +5,7 @@ from fastapi.templating import Jinja2Templates
 
 from src.dto.adventurerDto import *
 from src.models.adventurer import Adventurer
-from models.joinAdventurerTreeSkill import JoinAdventurerTreeSkill
+from src.models.joinAdventurerTreeSkill import JoinAdventurerTreeSkill
 from fastapi.responses import RedirectResponse
 
 from src.services.userService import UserService

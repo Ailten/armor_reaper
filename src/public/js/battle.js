@@ -7,6 +7,8 @@ window.addEventListener('load', async () => {
 
     for(let i=0; i<battleLog.length; i++){
         await battleLogAnime(battleLog[i][0], battleLog[i][1]);
+        if(battleLog[i][0].startsWith('<mask>'))
+            continue;
         await sleep(0.3);
     }
 
@@ -18,7 +20,13 @@ window.addEventListener('load', async () => {
 
 let indexBattleLog
 async function battleLogAnime(battleLog, mainCharacterId){
-
+    let isMaskedLog = battleLog.startsWith('<mask>');
+    if (isMaskedLog){
+        // skip print log.
+        await playAnimeLog(battleLog, mainCharacterId);
+        return;
+    }
+    
     let battleLogDom = document.getElementById('battle-log');
 
     // insert new p.
@@ -60,6 +68,11 @@ function isDieLog(log){
 
 
 async function playAnimeLog(battleLog, mainCharacterId) {
+    let isMaskedLog = battleLog.startsWith('<mask>');
+    if (isMaskedLog){
+        battleLog.replace('<mask>', '');
+    }
+
     //if(mainCharacterId == -1)
     //    return;
 
@@ -90,25 +103,30 @@ async function playAnimeLog(battleLog, mainCharacterId) {
     if(isAffectStatsLog(battleLog)){
 
         let battleScreenDom = document.getElementById('battle-sreen');
-
+        let statsTxtDom = null;
+    
         // get str.
         let strStatsEdit = battleLog.match(/[\+\-][0-9]+ [HMS]P$/)[0];
 
-        // build a dom stats message.
-        let statsTxtDom = battleScreenDom.appendChild(document.createElement('div'));
-        statsTxtDom.classList.add('stats-edit-fx');
-        statsTxtDom.classList.add(
-            strStatsEdit.endsWith('HP') ? 'stats-edit-hp':
-            strStatsEdit.endsWith('MP') ? 'stats-edit-mp':
-            'stats-edit-sp');
-        statsTxtDom.style.zIndex = '200';
-        statsTxtDom.innerText = strStatsEdit;
-
-        // set pos.
-        let posX = mainCharDom.offsetLeft + (mainCharDom.offsetWidth - statsTxtDom.offsetWidth) * 0.5;
-        statsTxtDom.style.left = `${posX}px`;
-        let posY = mainCharDom.offsetTop - statsTxtDom.offsetHeight;
-        statsTxtDom.style.top = `${posY}px`;
+        if (!isMaskedLog){
+    
+            // build a dom stats message.
+            statsTxtDom = battleScreenDom.appendChild(document.createElement('div'));
+            statsTxtDom.classList.add('stats-edit-fx');
+            statsTxtDom.classList.add(
+                strStatsEdit.endsWith('HP') ? 'stats-edit-hp':
+                strStatsEdit.endsWith('MP') ? 'stats-edit-mp':
+                'stats-edit-sp');
+            statsTxtDom.style.zIndex = '200';
+            statsTxtDom.innerText = strStatsEdit;
+    
+            // set pos.
+            let posX = mainCharDom.offsetLeft + (mainCharDom.offsetWidth - statsTxtDom.offsetWidth) * 0.5;
+            statsTxtDom.style.left = `${posX}px`;
+            let posY = mainCharDom.offsetTop - statsTxtDom.offsetHeight;
+            statsTxtDom.style.top = `${posY}px`;
+    
+        }
 
         // reducing stats jauge.
         let jaugeDom = mainCharDom.querySelector(
@@ -120,12 +138,19 @@ async function playAnimeLog(battleLog, mainCharacterId) {
             let jaugeValue = Number(jaugeDom.getAttribute('value'));
             let jaugeValueMax = Number(jaugeDom.getAttribute('max'));
             let amountEdit = Number(strStatsEdit.match(/[0-9]+/)[0]);
-            if(strStatsEdit.contains('-')){
+            if(strStatsEdit.includes('-')){
                 amountEdit *= -1;
             }
             jaugeValue += amountEdit
             jaugeValue = Math.min(Math.max(jaugeValue, 0), jaugeValueMax);
+            let interpolateJauveValue = jaugeValue / jaugeValueMax;
+            let purcentJaugeValue = Math.ceil(interpolateJauveValue * 100);
+            jaugeDom.getElementsByTagName('div')[0].style.width = `${purcentJaugeValue}%`;
+            jaugeDom.setAttribute('value', jaugeValue);
         }
+
+        if (isMaskedLog)
+            return
         
         await sleep(1);
 
@@ -197,11 +222,21 @@ function createCharacterDom(team, isLeft=true){
         )*10 + 10;
 
         // add jauge stats:
-        let hpJauge = div.appendChild(document.createElement('progress'));
-        hpJauge.classList.append('stats-jauge', 'hp-jauge');
-        hpJauge.style.color = 'red';
+        let hpJauge = div.appendChild(document.createElement('div'));  // hp.
+        hpJauge.classList.add('stats-jauge', 'hp-jauge');
         hpJauge.setAttribute('max', characterData.hp);
         hpJauge.setAttribute('value', characterData.hp);
+        hpJauge.appendChild(document.createElement('div'));
+        let mpJauge = div.appendChild(document.createElement('div'));  // mp.
+        mpJauge.classList.add('stats-jauge', 'mp-jauge');
+        mpJauge.setAttribute('max', characterData.mp);
+        mpJauge.setAttribute('value', characterData.mp);
+        mpJauge.appendChild(document.createElement('div'));
+        let spJauge = div.appendChild(document.createElement('div'));  // sp.
+        spJauge.classList.add('stats-jauge', 'sp-jauge');
+        spJauge.setAttribute('max', characterData.sp);
+        spJauge.setAttribute('value', characterData.sp);
+        spJauge.appendChild(document.createElement('div'));
 
     }
 

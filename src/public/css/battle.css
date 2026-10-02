@@ -79,3 +79,38 @@
 .stats-edit-sp{
     color: limegreen;
 }
+
+.stats-jauge{
+    width: 100px;
+    background-color: rgba(0, 0, 0, 0.137);
+}
+.stats-jauge,
+.stats-jauge > div{
+    height: 6px;
+    border-radius: 3px;
+}
+.stats-jauge > div{
+    width: 100%;
+}
+.hp-jauge > div{
+    background-color: red;
+}
+.mp-jauge > div{
+    background-color: lightseagreen;
+}
+.sp-jauge > div{
+    background-color: limegreen;
+}
+.hp-jauge{
+    margin-top: -40px;
+}
+.mp-jauge,
+.sp-jauge{
+    margin-top: 2px;
+    width: 50px;
+    height: 2px;
+}
+.mp-jauge > div,
+.sp-jauge > div{
+    height: 2px;
+}

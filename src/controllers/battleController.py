@@ -64,7 +64,7 @@ def simulateBattle(
     user = user_service.getById(user_id)
 
     # check if enouth energy for fight.
-    if user.energy <= 0:
+    if user.energy <= 0 and user.pseudo != "Ailten":  # EDIT: allow infinit energy dept for debuging.
     
         injectError(request.session, ErrorView('not enouth energy'))
         if 'adventurers_to_battle' in request.session:
