@@ -9,3 +9,7 @@
     height: 6px;
     border-radius: 3px;
 }
+
+.jauge-bordered{
+    border: 1px solid #c7c7c7;
+}
