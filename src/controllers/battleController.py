@@ -189,3 +189,26 @@ def simulateBattle(
         'left_team': left_team,
         'right_team': right_team
     })
+
+# ------>
+
+@battle_router.get('/hunt')
+def hunt(
+    request: Request,
+    session: Session = Depends(get_db_session)
+):
+    """
+    get page battle form.
+    """
+
+    resetError(request.session)
+
+    purcent_energy = int((
+        request.session.get('user', {}).get('energy', 0) /
+        request.session.get('user', {}).get('energy_max', 1)
+    ) * 100)
+
+    reachThePage(request.session)
+    return template.TemplateResponse(name='hunt.html', request=request, context={
+        'purcent_energy': purcent_energy
+    })

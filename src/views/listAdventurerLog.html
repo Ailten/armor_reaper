@@ -7,6 +7,10 @@
 
 {% block main %}
 
+<p>
+    <a href="{{ url_for('createAdventurer') }}">new adventurer</a>
+</p>
+
 <h2>Adventurers</h2>
 
 {% for adventurer in adventurers %}

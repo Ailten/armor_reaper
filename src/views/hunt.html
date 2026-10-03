@@ -2,6 +2,7 @@
 
 
 {% block links %}
+<link href="{{ url_for('public', path='css/jauge.css') }}" rel="stylesheet" >
 {% endblock links %}
 
 
@@ -10,8 +11,9 @@
 <h2>Hunt</h2>
 
 
-
-<progress max="{{ request.session.get('user').energy }}" value="{{ request.session.get('user').energy_max }}"></progress>
+<div class="jauge">
+    <div style="background-color: yellow; width: {{ purcent_energy }}%;"></div>
+</div>
 
 
 

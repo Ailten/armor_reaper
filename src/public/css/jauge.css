@@ -1,0 +1,11 @@
+
+.jauge{
+    width: 100px;
+    height: 6px;
+    border-radius: 3px;
+    background-color: rgba(0, 0, 0, 0.137);
+}
+.jauge > div{
+    height: 6px;
+    border-radius: 3px;
+}
