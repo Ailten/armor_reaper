@@ -103,6 +103,15 @@ class Battle:
                     targets=targets
                 )
 
+            # remove status effects (by expiring).
+            for c in self.characters:
+                for se_i in range(len(c.status_effects)-1, -1, -1):
+                    se = c.status_effects[se_i]
+                    if se.launcher.index != character_turn.index:
+                        continue
+                    if se.turn_when_apply + (se.turn_live or float('inf')) == self.turn:
+                        se.expire()
+
             # increase character turn (and turn).
             self.increaseCharacterTurn()
 

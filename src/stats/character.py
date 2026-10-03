@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING, Optional
 if TYPE_CHECKING:
     from .battle import Battle
     from .spell import Spell
+    from .statusEffect import StatusEffect
 
 from .spells.wait import Wait
 
@@ -38,6 +39,9 @@ class Character:
 
         self.is_player: bool = dict_params.get('is_player', True)
         self.skin: str|None = None if self.is_player else self.name
+
+        # status effects.
+        self.status_effects: list["StatusEffect"] = []
 
     # ------>
 
@@ -118,6 +122,17 @@ class Character:
         # log.
         self.battle.logs.append((f'{self.name} die.', self.index))
 
+        # remove SE the character has.
+        for se_i in range(len(self.status_effects)-1, -1, -1):
+            se = self.status_effects[se_i]
+            se.targetDie()
+        # remove SE the character had launch.
+        for c in self.battle.characters:
+            for se_i in range(len(c.status_effects)-1, -1, -1):
+                se = self.status_effects[se_i]
+                if se.launcher.index == self.index:
+                    se.launcherDie()
+
         # check who win.
         self.battle.isFightEnd()
 
@@ -171,28 +186,31 @@ class Character:
     
     # ------>
 
-    def addSP(self, sp_add: int):
+    def addSP(self, sp_add: int, is_log: bool=True):
         sp_add = self.sp.add(sp_add)
 
         # logs.
-        self.battle.logs.append((f'{self.name} : +{sp_add} SP', self.index))
+        self.battle.logs.append((f'{'<mask>' if is_log else ''}{self.name} : +{sp_add} SP', self.index))
 
-    def subSP(self, sp_sub: int):
+    def subSP(self, sp_sub: int, is_log: bool=True):
         sp_sub = self.sp.add(sp_sub)
 
         # logs.
-        self.battle.logs.append((f'{self.name} : -{sp_sub} SP', self.index))
+        self.battle.logs.append((f'{'<mask>' if is_log else ''}{self.name} : -{sp_sub} SP', self.index))
 
-    def addMP(self, mp_add: int):
+    def addMP(self, mp_add: int, is_log: bool=True):
         mp_add = self.mp.add(mp_add)
 
         # logs.
-        self.battle.logs.append((f'{self.name} : +{mp_add} MP', self.index))
+        self.battle.logs.append((f'{'<mask>' if is_log else ''}{self.name} : +{mp_add} MP', self.index))
 
-    def subMP(self, mp_sub: int):
+    def subMP(self, mp_sub: int, is_log: bool=True):
         mp_sub = self.mp.add(mp_sub)
 
         # logs.
-        self.battle.logs.append((f'{self.name} : -{mp_sub} MP', self.index))
+        self.battle.logs.append((f'{'<mask>' if is_log else ''}{self.name} : -{mp_sub} MP', self.index))
 
     # ------>
+
+    def addStatusEffect(self, se: "StatusEffect"):
+        self.status_effects.append(se)

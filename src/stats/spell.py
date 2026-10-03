@@ -57,15 +57,11 @@ class Spell:
         return True
     
     def applyCoseSpell(self, owner: "Character"):
-        owner.mp.sub(self.mana_cost)
-        owner.sp.sub(self.stamina_cost)
-        self.turn_when_use = owner.battle.turn  # update cooldown turn.
-
-        # log cost spell.
         if self.mana_cost > 0:
-            owner.battle.logs.append((f'<mask>{owner.name} : -{self.mana_cost} MP', owner.index))
+            owner.subMP(self.mana_cost, False)
         if self.stamina_cost > 0:
-            owner.battle.logs.append((f'<mask>{owner.name} : -{self.stamina_cost} SP', owner.index))
+            owner.subSP(self.stamina_cost, False)
+        self.turn_when_use = owner.battle.turn  # update cooldown turn.
 
     # ------>
 
