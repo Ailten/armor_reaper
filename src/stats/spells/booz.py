@@ -28,7 +28,7 @@ class Booz(Spell):
 
     def use(self, launcher: "Character", targets: list["Character"]):
         """
-        +2~3 creativity (3t) launcher.
+        +2~3 ALL_FIX (3t) launcher.
         """
 
         range_stats = (2, 3)
@@ -38,6 +38,6 @@ class Booz(Spell):
             target=launcher,
             turn_live=3,
             stats={
-                Caracs.CREATIVITY: random.randint(range_stats[0], range_stats[1])
+                Caracs.ALL_FIX: random.randint(range_stats[0], range_stats[1])
             }
         ))

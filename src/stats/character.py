@@ -85,6 +85,7 @@ class Character:
         # eval mult.
         damage_eval *= self.getMultTypeDamage(type_damage)
         damage_eval += self.getAddFixTypeDamage(type_damage)  # fix.
+        damage_eval *= self.getMultFinalTypeDamage(type_damage)  # final.
 
         damage_eval = max(int(damage_eval), 0)
 
@@ -105,6 +106,7 @@ class Character:
         
         # eval res mult.
         damage_eval /= self.getMultTypeRes(type_damage, launcher)
+        damage_eval -= self.getResFixTypeRes(type_damage)  # res fix.
 
         damage_eval = max(int(damage_eval), 0)
 
@@ -175,12 +177,12 @@ class Character:
     # ------>
 
     def getMultTypeDamage(self, type_damage: TypeDamage) -> float:
-        carac = type_damage.getCarac()
+        carac = type_damage.getCaracStats()
         stats = 0 if carac == None else self.getStats(carac)
         return (stats / 100.0) + 1.0
     
     def getMultTypeRes(self, type_damage: TypeDamage, oponent: 'Character') -> float:
-        carac = type_damage.getCarac()
+        carac = type_damage.getCaracStats()
         stats = 0 if carac == None else self.getStats(carac)
         stats -= 0 if carac == None else oponent.getStats(carac)
         stats = max(stats, 0)
@@ -188,9 +190,17 @@ class Character:
     
     def getAddFixTypeDamage(self, type_damage: TypeDamage) -> int:
         carac = type_damage.getCaracFix()
-        return 0 if carac == None else self.getStats(carac)
+        return 0 if carac == None else (self.getStats(carac) + self.getStats(Caracs.ALL_FIX) )
 
-    
+    def getResFixTypeRes(self, type_damage: TypeDamage) -> int:
+        carac = type_damage.getCaracResFix()
+        return 0 if carac == None else (self.getStats(carac) + self.getStats(Caracs.ALL_RES_FIX) )
+
+    def getMultFinalTypeDamage(self, type_damage: TypeDamage) -> float:
+        carac = type_damage.getCaracMultFinal()
+        stats = 0 if carac == None else self.getStats(carac)
+        return (stats / 100.0) + 1.0
+
     # ------>
 
     def addSP(self, sp_add: int, is_log: bool=True):
