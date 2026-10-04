@@ -11,7 +11,7 @@ class Spell:
         self.name = 'unknow-spell'
 
         self.turn_cooldown = 0
-        self.turn_when_use = 0  # stock last turn when use.
+        self.turn_when_use = float('-inf')  # stock last turn when use.
 
         self.element_spell = Element.NEUTRAL
         self.type_damage = TypeDamage.NEUTRAL
@@ -52,7 +52,7 @@ class Spell:
             return False
         if self.stamina_cost > owner.sp.val:
             return False
-        if (self.turn_when_use - owner.battle.turn) > self.turn_cooldown:  # verify cooldown turn.
+        if not ((owner.battle.turn - self.turn_when_use) > self.turn_cooldown):  # verify cooldown turn.
             return False
         return True
     

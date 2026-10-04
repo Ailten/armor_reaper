@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from ..character import Character
 
-from ..statusEffects.elemsBoost import ElemsBoost
+from ..statusEffects.caracsBoost import CaracsBoost
 
 import random
 
@@ -19,6 +19,7 @@ class Booz(Spell):
         self.element_spell = Element.WATER
         self.type_damage = TypeDamage.MAGIC
 
+        self.target_expected_count = 0
         self.turn_cooldown = 5
 
         self.priority_to_use = 500
@@ -27,18 +28,16 @@ class Booz(Spell):
 
     def use(self, launcher: "Character", targets: list["Character"]):
         """
-        +4~7 all elems (launcher) by lvl (3t).
+        +2~3 creativity (3t) launcher.
         """
 
-        range_stats = (4, 7)
+        range_stats = (2, 3)
 
-        launcher.addStatusEffect(ElemsBoost(
+        launcher.addStatusEffect(CaracsBoost(
             launcher=launcher,
             target=launcher,
             turn_live=3,
             stats={
-                Caracs.STRENGTH: random.randint(range_stats[0] * launcher.lvl, range_stats[1] * launcher.lvl),
-                Caracs.SAGESSE: random.randint(range_stats[0] * launcher.lvl, range_stats[1] * launcher.lvl),
-                Caracs.INTELIGENT: random.randint(range_stats[0] * launcher.lvl, range_stats[1] * launcher.lvl)
+                Caracs.CREATIVITY: random.randint(range_stats[0], range_stats[1])
             }
         ))

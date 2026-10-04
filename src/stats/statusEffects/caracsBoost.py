@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from ..character import Character
 
-class ElemsBoost(StatusEffect):
+class CaracsBoost(StatusEffect):
 
     def __init__(self, launcher: "Character", target: "Character", turn_live: int|None, stats: dict[Caracs, int]):
 

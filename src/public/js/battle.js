@@ -77,6 +77,8 @@ async function playAnimeLog(battleLog, mainCharacterId) {
     //    return;
 
     let mainCharDom = document.querySelector(`div[character-id="${mainCharacterId}"].battle-character-dom`);
+    if(mainCharDom == null)
+        return;  // character is already dead.
 
     // use a spell.
     if(isUseSpellLog(battleLog)){

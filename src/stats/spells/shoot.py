@@ -33,8 +33,8 @@ class Shoot(Spell):
         on 2 oponent.
         """
 
-        for i in range(self.target_expected_count):
-            current_target = targets[i%len(targets)]
+        for i in range(min(self.target_expected_count, len(targets))):
+            current_target = targets[i]
             
             if random.randint(1, 6) == 6:
                 launcher.atk(

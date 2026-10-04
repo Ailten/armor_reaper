@@ -118,6 +118,10 @@ def handleCreateAdventurer(
         adventurer_service.create(adventurer)
     except Exception as e:
         session.rollback()
+
+        print(e)
+        print(vars(adventurer_create_form))
+        print(vars(adventurer))
         
         injectError(request.session, ErrorView('an error raise from the database'))
         injectDtoForm(request.session, adventurer_create_form)

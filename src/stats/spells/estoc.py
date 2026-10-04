@@ -41,4 +41,4 @@ class Estoc(Spell):
             type_damage=self.type_damage
         )
 
-        targets[0].subMP(random.randint(3, 4), False)
+        targets[0].subSP(random.randint(3, 4), False)

@@ -11,14 +11,18 @@ class Caracs(IntEnum):
 
     # ------>
     
-    STRENGTH = 1  # mul damage phyisic.
+    STRENGTH = 1  # mul damage physic.
     SAGESSE = 2  # mul damage magic.
     INTELIGENT = 3  # use to boost mecanic.
 
-    AGILITY = 3  # use to chance of dodge.
-    DEXTERITY = 4  # use to chance to crit.
+    AGILITY = 4  # use to chance of dodge.
+    DEXTERITY = 5  # use to chance to crit.
 
-    LUCK = 5  # use to chance of loot.
+    LUCK = 6  # use to chance of loot.
+
+    GUTS = 7  # add fix (damage/heal) for physic.
+    CONSENTRATION = 8  # same for magic.
+    CREATIVITY = 9 # same for mecanic.
 
     # ------>
     

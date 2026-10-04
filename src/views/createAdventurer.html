@@ -18,6 +18,7 @@
         <span style="color: red;">{{ pseudo_error }}</span>
     {% endif %}
 
+    <br/>
     <label for="tree_skill">tree skill</label>
     <select name="tree_skill" id="tree_skill">
         {% for tree_skill in tree_skill_class_player %}
@@ -29,6 +30,7 @@
         <span style="color: red;">{{ tree_skill_error }}</span>
     {% endif %}
 
+    <br/>
     <input type="submit" value="create"/>
 
 </form>

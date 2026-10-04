@@ -115,6 +115,15 @@ class Battle:
             # increase character turn (and turn).
             self.increaseCharacterTurn()
 
+            # force kill (if battle to long).
+            if self.turn > 1000:
+                print('force kill battle')
+                for c in self.characters:
+                    if c.is_left_team and not c.is_death:
+                        c.death()
+                break
+
+
         # log.
         self.logs.append(('fight end !', -1))
         team_win = 'left' if self.is_left_win else 'right'

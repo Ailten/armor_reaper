@@ -84,6 +84,7 @@ class Character:
 
         # eval mult.
         damage_eval *= self.getMultTypeDamage(type_damage)
+        damage_eval += self.getAddFixTypeDamage(type_damage)  # fix.
 
         damage_eval = max(int(damage_eval), 0)
 
@@ -129,7 +130,7 @@ class Character:
         # remove SE the character had launch.
         for c in self.battle.characters:
             for se_i in range(len(c.status_effects)-1, -1, -1):
-                se = self.status_effects[se_i]
+                se = c.status_effects[se_i]
                 if se.launcher.index == self.index:
                     se.launcherDie()
 
@@ -146,6 +147,7 @@ class Character:
 
         # eval mult.
         damage_eval *= self.getMultTypeDamage(type_damage)
+        damage_eval += self.getAddFixTypeDamage(type_damage)  # fix.
 
         heal_eval = max(int(heal_eval), 0)
 
@@ -184,31 +186,36 @@ class Character:
         stats = max(stats, 0)
         return (stats / 100.0) + 1.0
     
+    def getAddFixTypeDamage(self, type_damage: TypeDamage) -> int:
+        carac = type_damage.getCaracFix()
+        return 0 if carac == None else self.getStats(carac)
+
+    
     # ------>
 
     def addSP(self, sp_add: int, is_log: bool=True):
         sp_add = self.sp.add(sp_add)
 
         # logs.
-        self.battle.logs.append((f'{'<mask>' if is_log else ''}{self.name} : +{sp_add} SP', self.index))
+        self.battle.logs.append((f'{"<mask>" if not is_log else ""}{self.name} : +{sp_add} SP', self.index))
 
     def subSP(self, sp_sub: int, is_log: bool=True):
-        sp_sub = self.sp.add(sp_sub)
+        sp_sub = self.sp.sub(sp_sub)
 
         # logs.
-        self.battle.logs.append((f'{'<mask>' if is_log else ''}{self.name} : -{sp_sub} SP', self.index))
+        self.battle.logs.append((f'{"<mask>" if not is_log else ""}{self.name} : -{sp_sub} SP', self.index))
 
     def addMP(self, mp_add: int, is_log: bool=True):
         mp_add = self.mp.add(mp_add)
 
         # logs.
-        self.battle.logs.append((f'{'<mask>' if is_log else ''}{self.name} : +{mp_add} MP', self.index))
+        self.battle.logs.append((f'{"<mask>" if not is_log else ""}{self.name} : +{mp_add} MP', self.index))
 
     def subMP(self, mp_sub: int, is_log: bool=True):
-        mp_sub = self.mp.add(mp_sub)
+        mp_sub = self.mp.sub(mp_sub)
 
         # logs.
-        self.battle.logs.append((f'{'<mask>' if is_log else ''}{self.name} : -{mp_sub} MP', self.index))
+        self.battle.logs.append((f'{"<mask>" if not is_log else ""}{self.name} : -{mp_sub} MP', self.index))
 
     # ------>
 

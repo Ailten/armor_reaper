@@ -12,9 +12,9 @@ class TreeSkillService(Service):
     __tree_skill_class_player: list[int] = [1,2,3]
 
     def __getAll(self):
-        TreeSkillService.__all = list(self.session.scalar(
+        TreeSkillService.__all = list(self.session.scalars(
             select(TreeSkill)
-        ))
+        ).all())
 
     # ------>
 

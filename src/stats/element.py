@@ -37,3 +37,13 @@ class TypeDamage(IntEnum):
             case TypeDamage.MECANIC:
                 return Caracs.INTELIGENT
         return None
+    
+    def getCaracFix(self) -> Caracs|None:
+        match self:
+            case TypeDamage.PHYSIC:
+                return Caracs.GUTS
+            case TypeDamage.MAGIC:
+                return Caracs.CONSENTRATION
+            case TypeDamage.MECANIC:
+                return Caracs.CREATIVITY
+        return None

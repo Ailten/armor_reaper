@@ -1,5 +1,6 @@
 
 from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy import text
 
 from .database import BaseModel
 
@@ -10,5 +11,5 @@ class Adventurer(BaseModel):
     id_user: Mapped[int]
     pseudo: Mapped[str]
 
-    lvl: Mapped[int]
-    xp: Mapped[int]
+    lvl: Mapped[int] = mapped_column(server_default=text("1"))
+    xp: Mapped[int] = mapped_column(server_default=text("0"))
